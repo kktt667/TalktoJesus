@@ -1,3 +1,5 @@
 Mokoto Glitch font import 
 add glitch effects
 train ai model 
+
+Interface  - do last, get the ai model up and running first 
