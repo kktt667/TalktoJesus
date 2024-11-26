@@ -1,7 +1,6 @@
 import { useLogin } from "@privy-io/react-auth";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { useState } from "react";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -9,11 +8,11 @@ export default function LandingPage() {
     onComplete: () => router.push("/dashboard"),
   });
 
-  const [buttonHover, setButtonHover] = useState({
-    login: false,
-    telegram: false,
-    twitter: false,
-  });
+  // const [buttonHover, setButtonHover] = useState({
+  //   login: false,
+  //   telegram: false,
+  //   twitter: false,
+  // });
 
   return (
     <>
