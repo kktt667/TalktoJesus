@@ -47,6 +47,8 @@ function MyApp({ Component, pageProps }: AppProps) {
             createOnLogin: "all-users",
           },
           appearance: {
+            landingHeader: 'Connect', 
+            loginMessage: 'Join Us My Children',
             theme: 'dark',
             accentColor: '#ffd700',
           },
