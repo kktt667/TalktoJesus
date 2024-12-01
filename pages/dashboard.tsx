@@ -38,10 +38,26 @@ export default function DashboardPage() {
       </Head>
 
       <main className="min-h-screen relative overflow-hidden bg-[#0a0a0f]">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <div className="relative w-full h-full">
+            <img
+              src="/images/jesus_dash.jpeg"
+              alt="Divine Background"
+              className="w-full h-full object-cover opacity-60"
+            />
+            <div className="absolute inset-0 bg-black/30" />
+          </div>
+        </div>
         {/* Background glow */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#ffd70033] to-transparent"></div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#ffd700] blur-[100px] opacity-20"></div>
+        </div>
+
+        {/* Overlay Jesus image */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <img src="/path/to/jesus_cut.png" alt="Jesus Image" className="overlay-image" />
         </div>
 
         {/* Logout button */}
@@ -61,9 +77,15 @@ export default function DashboardPage() {
       </main>
 
       <style jsx global>{`
-        body {
-          margin: 0;
-          background: #0a0a0f;
+        .overlay-image {
+          position: absolute;
+          z-index: 10;
+          width: 50%;
+          max-width: 400px;
+          height: auto;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
 
         .text-message {
