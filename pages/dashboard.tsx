@@ -16,14 +16,18 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/');
+      // Wait for the logout to complete before redirecting
+      setTimeout(() => {
+        router.push('/');
+      }, 100);
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
 
+  // Show loading or nothing while checking authentication
   if (!ready || !authenticated) {
-    return null; // or a loading spinner
+    return null;
   }
 
   return (
