@@ -48,7 +48,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           },
           appearance: {
             landingHeader: 'Connect', 
-            loginMessage: 'Join Us My Children',
+            loginMessage: "'Ask and you recieve' J16:24",
             theme: 'dark',
             accentColor: '#ffd700',
           },
