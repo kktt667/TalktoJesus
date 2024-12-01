@@ -13,6 +13,19 @@ export default function DashboardPage() {
     }
   }, [ready, authenticated, router]);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  if (!ready || !authenticated) {
+    return null; // or a loading spinner
+  }
+
   return (
     <>
       <Head>
@@ -29,7 +42,7 @@ export default function DashboardPage() {
 
         {/* Logout button */}
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="absolute top-4 right-4 z-10 px-4 py-2 text-[#ffd700] border border-[#ffd700] rounded-md hover:bg-[#ffd700]/10 transition-all duration-300"
         >
           Logout
