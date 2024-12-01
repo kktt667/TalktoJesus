@@ -12,7 +12,7 @@ export default function LandingPage() {
   const [currentQuote, setCurrentQuote] = useState(0);
 
   const bibleQuotes = [
-    "Do to others as you would have them do to you - Luke 6:31",
+    "Do everything in love - Cor 16:14",
     "I am the way, and the truth, and the life - John 14:6",
     "With God all things are possible - Matthew 19:26",
     "Be still, and know that I am God - Psalm 46:10",
