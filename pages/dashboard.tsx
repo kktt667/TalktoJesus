@@ -51,7 +51,7 @@ export default function DashboardPage() {
           <img
             src="/images/jesus_cut.png"
             alt="Jesus Image"
-            className="overlay-image opacity-90"
+            className="w-full h-full object-cover"
           />
         </div>
 
