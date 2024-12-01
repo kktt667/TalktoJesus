@@ -39,14 +39,13 @@ export default function DashboardPage() {
 
       <main className="min-h-screen relative overflow-hidden bg-[#0a0a0f]">
         {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <div className="relative w-full h-full">
+        <div className="fixed inset-0 z-0">
+          <div className="relative w-full h-full overflow-hidden">
             <img
-              src="/images/jesus_dash.jpeg"
+              src="/images/jesus_dash1.png"
               alt="Divine Background"
-              className="w-full h-full object-cover opacity-60"
+              className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/30" />
           </div>
         </div>
         {/* Background glow */}
@@ -57,7 +56,7 @@ export default function DashboardPage() {
 
         {/* Overlay Jesus image */}
         <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <img src="/path/to/jesus_cut.png" alt="Jesus Image" className="overlay-image" />
+          <img src="/images/jesus_cut.png" alt="Jesus Image" className="overlay-image" />
         </div>
 
         {/* Logout button */}
