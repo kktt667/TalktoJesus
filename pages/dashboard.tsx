@@ -47,11 +47,10 @@ export default function DashboardPage() {
   }, [ready, authenticated, router]);
 
   const calculateOrbPosition = (angle: number) => {
-    const radius = 400;
-    const baseY = 50;
-    const x = Math.sin(angle * Math.PI / 180) * radius;
-    const y = baseY - (Math.cos(angle * Math.PI / 180) * radius * 0.3);
-    return { x, y };
+    const spacing = 200;
+    const baseY = 100;
+    const x = (angle / 15) * spacing;
+    return { x, y: baseY };
   };
 
   const handleOrbClick = async (route: string, index: number) => {
@@ -101,6 +100,7 @@ export default function DashboardPage() {
             </div>
           </MouseParallaxChild>
 
+          {/* Centered Jesus */}
           <div className="absolute inset-x-0 bottom-0 flex justify-center items-end">
             <div className="relative">
               <motion.div
@@ -111,12 +111,12 @@ export default function DashboardPage() {
               <img
                 src="/images/jesus.png"
                 alt="Jesus"
-                className="relative max-h-[70vh] w-auto z-10"
+                className="relative max-h-[85vh] w-auto z-10"
               />
             </div>
           </div>
-
-          <div className="absolute inset-x-0 bottom-[15%] z-20 flex justify-center items-center">
+          {/* Orbs Container */}
+          <div className="absolute inset-x-0 bottom-[25%] z-20 flex justify-center items-center">
             <div className="relative h-[400px] w-[1000px]">
               {orbPositions.map((position, index) => {
                 const { x, y } = calculateOrbPosition(position.angle);
@@ -126,8 +126,8 @@ export default function DashboardPage() {
                     className="absolute left-1/2 top-1/2"
                     initial={{ x, y }}
                     animate={{
-                      x: selectedOrb === index ? 0 : x,
-                      y: selectedOrb === index ? -100 : y,
+                      x: selectedOrb === index ? "calc(50% - 16px)" : x,
+                      y: selectedOrb === index ? -200 : y,
                       scale: selectedOrb === index ? 1.5 : 1,
                       opacity: selectedOrb !== null && selectedOrb !== index ? 0 : 1,
                     }}
@@ -147,21 +147,15 @@ export default function DashboardPage() {
                         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 opacity-70"
                       />
                       <motion.div
-                        className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-48"
+                        className="absolute -bottom-16 left-1/2 transform -translate-x-1/2"
                         animate={{
                           opacity: selectedOrb === null ? 1 : 0
                         }}
                       >
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-[#0a0a0f]/80 blur-md rounded-lg" />
-                          <div className="relative text-center px-3 py-2">
-                            <span className="text-[#ffd700] text-lg font-cinzel whitespace-nowrap drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]">
-                              {position.label}
-                            </span>
-                          </div>
-                          <div className="absolute left-0 right-0 -bottom-2 flex justify-center gap-2">
-                            <div className="h-[2px] w-12 bg-gradient-to-r from-transparent via-[#ffd700] to-transparent" />
-                          </div>
+                        <div className="bg-black/40 backdrop-blur-md px-6 py-2 rounded-lg border border-[#ffd700]/30">
+                          <span className="text-[#ffd700] text-xl font-cinzel whitespace-nowrap tracking-wider">
+                            {position.label}
+                          </span>
                         </div>
                       </motion.div>
                     </div>
@@ -221,13 +215,6 @@ export default function DashboardPage() {
         @keyframes rayAnimation {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
-        }
-
-        .text-glow {
-          text-shadow: 
-            0 0 5px rgba(255,215,0,0.5),
-            0 0 10px rgba(255,215,0,0.3),
-            0 0 15px rgba(255,215,0,0.2);
         }
       `}</style>
     </>
