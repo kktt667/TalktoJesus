@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
       <MouseParallaxContainer
         className="min-h-screen relative overflow-hidden bg-[#0a0a0f]"
-        containerStyles={{
+        containerStyle={{
           width: "100%",
           height: "100vh",
         }}
