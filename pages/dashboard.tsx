@@ -46,25 +46,22 @@ export default function DashboardPage() {
     }
   }, [ready, authenticated, router]);
 
-  const handleOrbClick = async (route: string, index: number) => {
-    setSelectedOrb(index);
-    
-    // Three-stage animation sequence
-    setTimeout(() => {
-      setIsTransitioning(true);
-    }, 1000); // After orb rises
-    
-    setTimeout(() => {
-      router.push(route);
-    }, 2500); // After flash effect
+  const calculateOrbPosition = (angle: number) => {
+    const radius = 400;
+    const baseY = 50;
+    const x = Math.sin(angle * Math.PI / 180) * radius;
+    const y = baseY - (Math.cos(angle * Math.PI / 180) * radius * 0.3);
+    return { x, y };
   };
 
-  const calculateOrbPosition = (angle: number) => {
-    const radius = 300; // Adjust this value to change the semicircle size
-    const baseY = -50; // Adjust this to move the semicircle up/down
-    const x = Math.sin(angle * Math.PI / 180) * radius;
-    const y = baseY - (Math.cos(angle * Math.PI / 180) * radius);
-    return { x, y };
+  const handleOrbClick = async (route: string, index: number) => {
+    setSelectedOrb(index);
+    setTimeout(() => {
+      setIsTransitioning(true);
+    }, 1000);
+    setTimeout(() => {
+      router.push(route);
+    }, 2500);
   };
 
   if (!ready || !authenticated) {
@@ -89,7 +86,6 @@ export default function DashboardPage() {
           globalFactorX={0.3}
           globalFactorY={0.3}
         >
-          {/* Background Layer with enhanced movement */}
           <MouseParallaxChild
             factorX={0.5}
             factorY={0.5}
@@ -104,17 +100,9 @@ export default function DashboardPage() {
               />
             </div>
           </MouseParallaxChild>
-          {/* Jesus Layer - Adjusted to touch bottom */}
-          <MouseParallaxChild
-            factorX={0.2}
-            factorY={0.2}
-            className="absolute inset-0 flex items-end justify-center"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="relative mb-[-10%]" // Negative margin to ensure bottom touch
-            >
+
+          <div className="absolute inset-x-0 bottom-0 flex justify-center items-end">
+            <div className="relative">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -123,14 +111,13 @@ export default function DashboardPage() {
               <img
                 src="/images/jesus.png"
                 alt="Jesus"
-                className="relative max-h-[90vh] w-auto z-10"
+                className="relative max-h-[70vh] w-auto z-10"
               />
-            </motion.div>
-          </MouseParallaxChild>
+            </div>
+          </div>
 
-          {/* Orbs Layer */}
-          <div className="absolute inset-x-0 bottom-[20%] z-20 flex justify-center items-center">
-            <div className="relative h-[400px] w-[800px]">
+          <div className="absolute inset-x-0 bottom-[15%] z-20 flex justify-center items-center">
+            <div className="relative h-[400px] w-[1000px]">
               {orbPositions.map((position, index) => {
                 const { x, y } = calculateOrbPosition(position.angle);
                 return (
@@ -148,7 +135,7 @@ export default function DashboardPage() {
                     whileHover={{ scale: selectedOrb === null ? 1.1 : 1 }}
                     onClick={() => !selectedOrb && handleOrbClick(position.route, index)}
                   >
-                    <div className="relative w-24 h-24">
+                    <div className="relative w-32 h-32">
                       <img
                         src="/images/Orbs.png"
                         alt={`Orb ${index + 1}`}
@@ -157,18 +144,25 @@ export default function DashboardPage() {
                       <img
                         src="/images/dove_icon.png"
                         alt="Dove"
-                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 opacity-70"
+                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 opacity-70"
                       />
-                      {/* Divine Label */}
                       <motion.div
-                        className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-32 text-center"
+                        className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-48"
                         animate={{
                           opacity: selectedOrb === null ? 1 : 0
                         }}
                       >
-                        <span className="text-[#ffd700] text-sm font-cinzel whitespace-nowrap">
-                          {position.label}
-                        </span>
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-[#0a0a0f]/80 blur-md rounded-lg" />
+                          <div className="relative text-center px-3 py-2">
+                            <span className="text-[#ffd700] text-lg font-cinzel whitespace-nowrap drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]">
+                              {position.label}
+                            </span>
+                          </div>
+                          <div className="absolute left-0 right-0 -bottom-2 flex justify-center gap-2">
+                            <div className="h-[2px] w-12 bg-gradient-to-r from-transparent via-[#ffd700] to-transparent" />
+                          </div>
+                        </div>
                       </motion.div>
                     </div>
                   </motion.div>
@@ -177,7 +171,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Logout Button */}
           <motion.button
             whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 215, 0, 0.1)" }}
             onClick={logout}
@@ -187,7 +180,6 @@ export default function DashboardPage() {
           </motion.button>
         </MouseParallaxContainer>
 
-        {/* Transition Flash */}
         <AnimatePresence>
           {isTransitioning && (
             <motion.div
@@ -229,6 +221,13 @@ export default function DashboardPage() {
         @keyframes rayAnimation {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+
+        .text-glow {
+          text-shadow: 
+            0 0 5px rgba(255,215,0,0.5),
+            0 0 10px rgba(255,215,0,0.3),
+            0 0 15px rgba(255,215,0,0.2);
         }
       `}</style>
     </>
