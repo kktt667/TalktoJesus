@@ -12,19 +12,32 @@ export default function DashboardPage() {
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
   interface OrbPosition {
-    top?: string;
-    bottom?: string;
-    left?: string;
-    right?: string;
+    angle: number;
     route: string;
     label: string;
   }
 
   const orbPositions: OrbPosition[] = [
-    { top: "25%", left: "25%", route: "/page1", label: "Orb 1" },
-    { top: "25%", right: "25%", route: "/page2", label: "Orb 2" },
-    { bottom: "25%", left: "25%", route: "/page3", label: "Orb 3" },
-    { bottom: "25%", right: "25%", route: "/page4", label: "Orb 4" },
+    { 
+      angle: -45, 
+      route: "/acts-generator", 
+      label: "Acts of Kindness Generator" 
+    },
+    { 
+      angle: -15, 
+      route: "/parable-generator", 
+      label: "Parable Generator" 
+    },
+    { 
+      angle: 15, 
+      route: "/prayer-generator", 
+      label: "Prayer Generator" 
+    },
+    { 
+      angle: 45, 
+      route: "/wwjd-generator", 
+      label: "What Would Jesus Do?" 
+    }
   ];
 
   useEffect(() => {
@@ -35,10 +48,23 @@ export default function DashboardPage() {
 
   const handleOrbClick = async (route: string, index: number) => {
     setSelectedOrb(index);
-    setIsTransitioning(true);
+    
+    // Three-stage animation sequence
+    setTimeout(() => {
+      setIsTransitioning(true);
+    }, 1000); // After orb rises
+    
     setTimeout(() => {
       router.push(route);
-    }, 1500);
+    }, 2500); // After flash effect
+  };
+
+  const calculateOrbPosition = (angle: number) => {
+    const radius = 300; // Adjust this value to change the semicircle size
+    const baseY = -50; // Adjust this to move the semicircle up/down
+    const x = Math.sin(angle * Math.PI / 180) * radius;
+    const y = baseY - (Math.cos(angle * Math.PI / 180) * radius);
+    return { x, y };
   };
 
   if (!ready || !authenticated) {
@@ -48,7 +74,7 @@ export default function DashboardPage() {
   return (
     <>
       <Head>
-        <title>Dashboard</title>
+        <title>Divine Dashboard</title>
         <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet" />
       </Head>
 
@@ -60,35 +86,34 @@ export default function DashboardPage() {
             height: "100%",
             overflow: "hidden"
           }}
-          globalFactorX={0.1}
-          globalFactorY={0.1}
+          globalFactorX={0.3}
+          globalFactorY={0.3}
         >
-          {/* Background Layer */}
+          {/* Background Layer with enhanced movement */}
           <MouseParallaxChild
-            factorX={0.2}
-            factorY={0.2}
-            className="absolute inset-[-10%] w-[120%] h-[120%]"
+            factorX={0.5}
+            factorY={0.5}
+            className="absolute inset-[-20%] w-[140%] h-[140%]"
           >
             <div className="relative w-full h-full">
               <img
                 src="/images/dash_background.png"
                 alt="Divine Background"
                 className="absolute w-full h-full object-cover"
-                style={{ transform: "scale(1.2)" }}
+                style={{ transform: "scale(1.4)" }}
               />
             </div>
           </MouseParallaxChild>
-
-          {/* Jesus Layer */}
+          {/* Jesus Layer - Adjusted to touch bottom */}
           <MouseParallaxChild
-            factorX={0.1}
-            factorY={0.1}
-            className="absolute inset-0 flex items-center justify-center"
+            factorX={0.2}
+            factorY={0.2}
+            className="absolute inset-0 flex items-end justify-center"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative"
+              className="relative mb-[-10%]" // Negative margin to ensure bottom touch
             >
               <motion.div
                 animate={{ rotate: 360 }}
@@ -98,53 +123,65 @@ export default function DashboardPage() {
               <img
                 src="/images/jesus.png"
                 alt="Jesus"
-                className="relative max-w-[600px] w-full h-auto z-10"
+                className="relative max-h-[90vh] w-auto z-10"
               />
             </motion.div>
           </MouseParallaxChild>
 
           {/* Orbs Layer */}
-          <div className="absolute inset-0 z-20">
-            {orbPositions.map((position, index) => (
-              <motion.div
-                key={index}
-                className="absolute"
-                style={{
-                  top: position.top,
-                  bottom: position.bottom,
-                  left: position.left,
-                  right: position.right,
-                }}
-                animate={{
-                  scale: selectedOrb === index ? 1.5 : 1,
-                  x: selectedOrb === index ? "calc(50vw - 50%)" : 0,
-                  y: selectedOrb === index ? "calc(50vh - 50%)" : 0,
-                  opacity: selectedOrb !== null && selectedOrb !== index ? 0 : 1,
-                }}
-                whileHover={{ scale: 1.1 }}
-                onClick={() => handleOrbClick(position.route, index)}
-              >
-                <div className="relative w-24 h-24">
-                  <img
-                    src="/images/Orbs.png"
-                    alt={`Orb ${index + 1}`}
-                    className="w-full h-full"
-                  />
-                  <img
-                    src="/images/dove_icon.png"
-                    alt="Dove"
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 opacity-70"
-                  />
-                </div>
-              </motion.div>
-            ))}
+          <div className="absolute inset-x-0 bottom-[20%] z-20 flex justify-center items-center">
+            <div className="relative h-[400px] w-[800px]">
+              {orbPositions.map((position, index) => {
+                const { x, y } = calculateOrbPosition(position.angle);
+                return (
+                  <motion.div
+                    key={index}
+                    className="absolute left-1/2 top-1/2"
+                    initial={{ x, y }}
+                    animate={{
+                      x: selectedOrb === index ? 0 : x,
+                      y: selectedOrb === index ? -100 : y,
+                      scale: selectedOrb === index ? 1.5 : 1,
+                      opacity: selectedOrb !== null && selectedOrb !== index ? 0 : 1,
+                    }}
+                    transition={{ duration: 1, ease: "easeInOut" }}
+                    whileHover={{ scale: selectedOrb === null ? 1.1 : 1 }}
+                    onClick={() => !selectedOrb && handleOrbClick(position.route, index)}
+                  >
+                    <div className="relative w-24 h-24">
+                      <img
+                        src="/images/Orbs.png"
+                        alt={`Orb ${index + 1}`}
+                        className="w-full h-full"
+                      />
+                      <img
+                        src="/images/dove_icon.png"
+                        alt="Dove"
+                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 opacity-70"
+                      />
+                      {/* Divine Label */}
+                      <motion.div
+                        className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-32 text-center"
+                        animate={{
+                          opacity: selectedOrb === null ? 1 : 0
+                        }}
+                      >
+                        <span className="text-[#ffd700] text-sm font-cinzel whitespace-nowrap">
+                          {position.label}
+                        </span>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Logout Button */}
           <motion.button
             whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 215, 0, 0.1)" }}
             onClick={logout}
-            className="absolute top-4 right-4 z-30 px-4 py-2 text-[#ffd700] border border-[#ffd700] rounded-md"
+            className="absolute top-4 right-4 z-30 px-4 py-2 text-[#ffd700] border border-[#ffd700] rounded-md font-cinzel"
           >
             Logout
           </motion.button>
@@ -158,17 +195,26 @@ export default function DashboardPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-white z-50"
-              transition={{ duration: 1.5 }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
             />
           )}
         </AnimatePresence>
       </div>
 
       <style jsx global>{`
+        @font-face {
+          font-family: 'Cinzel';
+          src: url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap');
+        }
+
         body {
           margin: 0;
           padding: 0;
           overflow: hidden;
+        }
+
+        .font-cinzel {
+          font-family: 'Cinzel', serif;
         }
 
         .bg-gradient-radial {
