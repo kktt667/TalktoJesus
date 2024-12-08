@@ -48,9 +48,9 @@ export default function DashboardPage() {
 
   const calculateOrbPosition = (angle: number) => {
     const radius = 400;
-    const baseY = 50;
+    const baseY = 150;
     const x = Math.sin(angle * Math.PI / 180) * radius;
-    const y = baseY - (Math.cos(angle * Math.PI / 180) * radius * 0.3);
+    const y = baseY + (Math.pow(Math.cos(angle * Math.PI / 180), 2) * radius * 0.2);
     return { x, y };
   };
 
@@ -67,7 +67,6 @@ export default function DashboardPage() {
   if (!ready || !authenticated) {
     return null;
   }
-
   return (
     <>
       <Head>
@@ -111,11 +110,10 @@ export default function DashboardPage() {
               <img
                 src="/images/jesus.png"
                 alt="Jesus"
-                className="relative max-h-[70vh] w-auto z-10"
+                className="relative max-h-[80vh] w-auto z-10"
               />
             </div>
           </div>
-
           <div className="absolute inset-x-0 bottom-[15%] z-20 flex justify-center items-center">
             <div className="relative h-[400px] w-[1000px]">
               {orbPositions.map((position, index) => {
@@ -147,20 +145,23 @@ export default function DashboardPage() {
                         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 opacity-70"
                       />
                       <motion.div
-                        className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-48"
+                        className="absolute -bottom-16 left-1/2 transform -translate-x-1/2"
                         animate={{
                           opacity: selectedOrb === null ? 1 : 0
                         }}
                       >
                         <div className="relative">
-                          <div className="absolute inset-0 bg-[#0a0a0f]/80 blur-md rounded-lg" />
-                          <div className="relative text-center px-3 py-2">
-                            <span className="text-[#ffd700] text-lg font-cinzel whitespace-nowrap drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]">
-                              {position.label}
-                            </span>
-                          </div>
-                          <div className="absolute left-0 right-0 -bottom-2 flex justify-center gap-2">
-                            <div className="h-[2px] w-12 bg-gradient-to-r from-transparent via-[#ffd700] to-transparent" />
+                          <div className="relative">
+                            <div className="absolute -left-4 top-0 w-4 h-4 bg-[#805b15] skew-y-[45deg]" />
+                            <div className="absolute -right-4 top-0 w-4 h-4 bg-[#805b15] skew-y-[-45deg]" />
+                            <div className="relative px-6 py-2 bg-[#ffd700] text-[#000000] font-cinzel text-lg transform perspective-500 rotateX-10 ribbon-shadow ribbon-hover">
+                              <div className="relative z-10">
+                                {position.label}
+                              </div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20" />
+                            </div>
+                            <div className="absolute -left-3 top-full w-3 h-4 bg-[#805b15]" />
+                            <div className="absolute -right-3 top-full w-3 h-4 bg-[#805b15]" />
                           </div>
                         </div>
                       </motion.div>
@@ -192,7 +193,6 @@ export default function DashboardPage() {
           )}
         </AnimatePresence>
       </div>
-
       <style jsx global>{`
         @font-face {
           font-family: 'Cinzel';
@@ -223,11 +223,27 @@ export default function DashboardPage() {
           100% { transform: rotate(360deg); }
         }
 
-        .text-glow {
-          text-shadow: 
-            0 0 5px rgba(255,215,0,0.5),
-            0 0 10px rgba(255,215,0,0.3),
-            0 0 15px rgba(255,215,0,0.2);
+        .perspective-500 {
+          perspective: 500px;
+        }
+
+        .rotateX-10 {
+          transform: rotateX(10deg);
+        }
+
+        .ribbon-hover {
+          transition: all 0.3s ease;
+        }
+
+        .ribbon-hover:hover {
+          transform: rotateX(10deg) scale(1.05);
+          filter: brightness(1.1);
+        }
+
+        .ribbon-shadow {
+          box-shadow: 
+            0 4px 6px rgba(0, 0, 0, 0.1),
+            0 1px 3px rgba(0, 0, 0, 0.08);
         }
       `}</style>
     </>
