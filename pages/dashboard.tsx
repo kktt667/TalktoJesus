@@ -47,7 +47,7 @@ export default function DashboardPage() {
   }, [ready, authenticated, router]);
 
   const calculateOrbPosition = (angle: number) => {
-    const spacing = 200;
+    const spacing = 100;
     const baseY = 100;
     const x = (angle / 15) * spacing;
     return { x, y: baseY };
