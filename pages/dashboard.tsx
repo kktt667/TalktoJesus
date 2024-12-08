@@ -71,108 +71,85 @@ export default function DashboardPage() {
           height: "100vh",
         }}
       >
-        {/* Background with parallax effect */}
-        <MouseParallaxChild
-          factorX={0.03}
-          factorY={0.03}
-          className="fixed inset-0 z-0 opacity-70"
-        >
-          <img
-            src="/images/dash_background.png"
-            alt="Divine Background"
-            className="w-full h-full object-cover"
-          />
-        </MouseParallaxChild>
-
-        {/* Central Jesus figure with ray effect */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="absolute inset-0 flex items-center justify-center z-10"
-        >
-          <div className="relative">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 bg-gradient-radial from-[#ffd700]/30 to-transparent"
-            />
+        <div className="relative w-full h-full"> {/* Add this wrapper div */}
+          {/* Background with parallax effect */}
+          <MouseParallaxChild
+            factorX={0.03}
+            factorY={0.03}
+            className="fixed inset-0 z-0 opacity-70"
+          >
             <img
-              src="/images/jesus.png"
-              alt="Jesus"
-              className="relative z-20 max-w-[500px] h-auto"
+              src="/images/dash_background.png"
+              alt="Divine Background"
+              className="w-full h-full object-cover"
             />
-          </div>
-        </motion.div>
+          </MouseParallaxChild>
 
-         {/* Orbs */}
-      {orbPositions.map((position, index) => (
-        <motion.div
-          key={index}
-          className="absolute z-30"
-          style={position}
-          animate={{
-            scale: selectedOrb === index ? 1.5 : 1,
-            x: selectedOrb === index ? "calc(50vw - 50%)" : 0,
-            y: selectedOrb === index ? "calc(50vh - 50%)" : 0,
-            opacity: selectedOrb !== null && selectedOrb !== index ? 0 : 1,
-          }}
-          transition={{
-            duration: 0.5,
-            ease: "easeInOut"
-          }}
-          whileHover={{ scale: selectedOrb === null ? 1.1 : 1 }}
-          onClick={() => !selectedOrb && handleOrbClick(position.route, index)}
-        >
-          <div className="relative">
-            <motion.img
-              src="/images/Orbs.png"
-              alt={`Orb ${index + 1}`}
-              className="w-24 h-24 cursor-pointer"
+          {/* Central Jesus figure with ray effect */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="absolute inset-0 flex items-center justify-center z-10"
+          >
+            <div className="relative">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 bg-gradient-radial from-[#ffd700]/30 to-transparent"
+              />
+              <img
+                src="/images/jesus.png"
+                alt="Jesus"
+                className="relative z-20 max-w-[500px] h-auto"
+              />
+            </div>
+          </motion.div>
+
+          {/* Orbs */}
+          {orbPositions.map((position, index) => (
+            <motion.div
+              key={index}
+              className="absolute z-30"
+              style={position}
               animate={{
-                rotate: selectedOrb === index ? 360 : 0
+                scale: selectedOrb === index ? 1.5 : 1,
+                x: selectedOrb === index ? "calc(50vw - 50%)" : 0,
+                y: selectedOrb === index ? "calc(50vh - 50%)" : 0,
+                opacity: selectedOrb !== null && selectedOrb !== index ? 0 : 1,
               }}
               transition={{
-                duration: 1,
+                duration: 0.5,
                 ease: "easeInOut"
               }}
-            />
-            <motion.img
-              src="/images/dove_icon.png"
-              alt="Dove"
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12"
-              animate={{
-                opacity: selectedOrb === index ? 0 : 0.7,
-                scale: selectedOrb === index ? 0 : 1
-              }}
-              transition={{
-                duration: 0.3
-              }}
-            />
-          </div>
-        </motion.div>
-      ))}
+              whileHover={{ scale: selectedOrb === null ? 1.1 : 1 }}
+              onClick={() => !selectedOrb && handleOrbClick(position.route, index)}
+            >
+              {/* ... orb content ... */}
+            </motion.div>
+          ))}
 
-        {/* Transition flash effect */}
-      <AnimatePresence>
-        {isTransitioning && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-white z-50"
-            transition={{ duration: 1.5 }}
-          />
-        )}
-      </AnimatePresence>
+          {/* Transition flash effect */}
+          <AnimatePresence>
+            {isTransitioning && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-white z-50"
+                transition={{ duration: 1.5 }}
+              />
+            )}
+          </AnimatePresence>
 
-        {/* Logout button */}
-        <motion.button
-          whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 215, 0, 0.1)" }}
-          onClick={handleLogout}
-          className="absolute top-4 right-4 z-40 px-4 py-2 text-[#ffd700] border border-[#ffd700] rounded-md transition-all duration-300"
-        >
-          Logout
-        </motion.button>
+          {/* Logout button */}
+          <motion.button
+            whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 215, 0, 0.1)" }}
+            onClick={handleLogout}
+            className="absolute top-4 right-4 z-40 px-4 py-2 text-[#ffd700] border border-[#ffd700] rounded-md transition-all duration-300"
+          >
+            Logout
+          </motion.button>
+        </div>
       </MouseParallaxContainer>
 
       <style jsx global>{`
