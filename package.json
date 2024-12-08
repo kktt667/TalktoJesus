@@ -21,7 +21,9 @@
     "next": "^15.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "three": "^0.170.0"
+    "three": "^0.170.0",
+    "framer-motion": "^10.0.0",
+    "react-parallax-mouse": "^2.0.1"
   },
   "devDependencies": {
     "@tsconfig/next": "^2.0.0",
