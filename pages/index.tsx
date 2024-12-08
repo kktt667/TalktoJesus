@@ -73,7 +73,7 @@ export default function LandingPage() {
           <div className="divine-image-container mb-12">
             <div className="relative">
               <img 
-                src="/images/jesus.png" 
+                src="/images/jesus1.png" 
                 alt="Jesus"
                 className="w-[400px] divine-jesus-image"
               />
