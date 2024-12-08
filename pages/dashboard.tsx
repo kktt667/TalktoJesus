@@ -127,7 +127,7 @@ export default function DashboardPage() {
                     initial={{ x, y }}
                     animate={{
                       x: selectedOrb === index ? "calc(50% - 16px)" : x,
-                      y: selectedOrb === index ? -200 : y,
+                      y: selectedOrb === index ? 0 : y,
                       scale: selectedOrb === index ? 1.5 : 1,
                       opacity: selectedOrb !== null && selectedOrb !== index ? 0 : 1,
                     }}
