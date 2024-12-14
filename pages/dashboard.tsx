@@ -15,7 +15,8 @@ interface NavigationOption {
   route: string;
   icon: string;
   description: string;
-  position: "left" | "right";
+  position: "top" | "right" | "bottom" | "left";
+  angle: number;
 }
 
 const scriptures: Scripture[] = [
@@ -43,28 +44,32 @@ const navigationOptions: NavigationOption[] = [
     route: "/acts-generator",
     icon: "🕊️",
     description: "Share Christ's love through daily acts",
-    position: "left"
+    position: "top",
+    angle: -45
   },
   {
     title: "Daily Prayer",
     route: "/prayer-generator",
     icon: "🙏",
     description: "Strengthen your spiritual connection",
-    position: "right"
+    position: "right",
+    angle: 45
   },
   {
     title: "Parables & Teachings",
     route: "/parable-generator",
     icon: "📖",
     description: "Wisdom through His words",
-    position: "left"
+    position: "bottom",
+    angle: 135
   },
   {
     title: "Divine Guidance",
     route: "/wwjd-generator",
     icon: "✝️",
     description: "What would Jesus do?",
-    position: "right"
+    position: "left",
+    angle: -135
   }
 ];
 
@@ -79,15 +84,16 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
+  hidden: { opacity: 0, scale: 0.9 },
+  show: { 
+    opacity: 1, 
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100
+    }
+  }
 };
-
-const fadeIn = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1 }
-};
-
 export default function DashboardPage() {
   const router = useRouter();
   const { ready, authenticated, logout } = usePrivy();
@@ -131,19 +137,32 @@ export default function DashboardPage() {
         variants={containerVariants}
         className="relative min-h-screen overflow-hidden"
       >
-        {/* Background Image */}
-        <div 
-          className="fixed inset-0 z-0"
-          style={{
-            backgroundImage: "url('/images/peach_background.jpg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        />
+        {/* Background with clouds and light */}
+        <div className="fixed inset-0 z-0">
+          <img
+            src="/images/background.jpg"
+            alt="Divine Background"
+            className="w-full h-full object-cover opacity-80"
+          />
+          <div className="absolute inset-0 bg-[#FFF5F0]/20 backdrop-blur-[1px]" />
+        </div>
 
-        {/* Subtle Overlay */}
-        <div className="fixed inset-0 z-0 bg-[#FFF5F0]/10 backdrop-blur-[2px]" />
+        {/* Floating Stars Effect */}
+        <div className="fixed inset-0 z-1">
+          {[...Array(15)].map((_, i) => (
+            <div 
+              key={i} 
+              className="star-container"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`
+              }}
+            >
+              <div className="star"></div>
+            </div>
+          ))}
+        </div>
 
         {/* Content */}
         <div className="relative z-10">
@@ -163,26 +182,80 @@ export default function DashboardPage() {
               >
                 ✝️
               </motion.span>
-              <h1 className="font-cinzel text-2xl text-orange-900">
+              <h1 className="font-cinzel text-2xl text-[#ffd700]">
                 Jesus Connect
               </h1>
             </motion.div>
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 215, 0, 0.1)" }}
               whileTap={{ scale: 0.95 }}
               onClick={logout}
-              className="px-6 py-3 text-orange-800 border border-orange-300 rounded-full
-                       backdrop-blur-sm font-cinzel text-sm tracking-wider
-                       hover:bg-white/10 transition-all duration-300"
+              className="px-6 py-3 text-[#ffd700] border border-[#ffd700] rounded-full
+                       backdrop-blur-sm font-cinzel text-sm tracking-wider"
             >
               Depart in Peace
             </motion.button>
           </motion.header>
 
-          {/* Scripture Verse */}
-          <motion.div 
+          {/* Central Content */}
+          <div className="relative min-h-[calc(100vh-8rem)] flex items-center justify-center">
+            {/* Floating Jesus */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
+              <div className="relative">
+                <img 
+                  src="/images/jesus1.png" 
+                  alt="Jesus"
+                  className="w-[300px] divine-jesus-image"
+                />
+                <div className="absolute inset-0 glow-effect"></div>
+              </div>
+            </div>
+
+            {/* Navigation Options */}
+            <div className="relative w-[800px] h-[800px]">
+              {navigationOptions.map((option, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ 
+                    scale: 1.05,
+                    boxShadow: "0 0 30px rgba(255, 215, 0, 0.3)"
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  className="absolute w-64 cursor-pointer"
+                  style={{
+                    top: '50%',
+                    left: '50%',
+                    transform: `rotate(${option.angle}deg) translate(250px) rotate(-${option.angle}deg)`,
+                  }}
+                  onClick={() => handleNavigation(option.route)}
+                >
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-6
+                                border border-[#ffd700]/30 hover:bg-white/20 
+                                transition-all duration-300 text-center">
+                    <motion.span 
+                      className="text-4xl mb-4 block"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      {option.icon}
+                    </motion.span>
+                    <h3 className="font-cinzel text-xl mb-2 text-[#ffd700]">
+                      {option.title}
+                    </h3>
+                    <p className="font-cormorant text-lg text-[#ffd700]/80">
+                      {option.description}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Scripture Quote */}
+          <motion.div
             variants={itemVariants}
-            className="relative mt-8"
+            className="fixed bottom-0 left-0 right-0 p-6 text-center bg-black/10 backdrop-blur-sm"
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -190,68 +263,15 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="text-center max-w-2xl mx-auto p-6 bg-white/10 backdrop-blur-sm rounded-2xl"
+                className="font-cormorant text-xl text-[#ffd700]"
               >
-                <div className="font-cormorant text-xl text-orange-900">
-                  <p className="italic">{scriptures[currentScripture]?.verse}</p>
-                  <p className="text-sm mt-2 font-cinzel">
-                    — {scriptures[currentScripture]?.reference}
-                  </p>
-                </div>
+                <p className="italic">{scriptures[currentScripture]?.verse}</p>
+                <p className="text-sm mt-2 font-cinzel">
+                  — {scriptures[currentScripture]?.reference}
+                </p>
               </motion.div>
             </AnimatePresence>
           </motion.div>
-
-          {/* Navigation Grid */}
-          <motion.div
-            variants={containerVariants}
-            className="container mx-auto px-4 mt-16"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-              {navigationOptions.map((option, index) => (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  whileHover={{ 
-                    scale: 1.02,
-                    boxShadow: "0 0 30px rgba(251, 146, 60, 0.15)"
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`
-                    ${option.position === "left" ? "md:mr-12" : "md:ml-12"}
-                    bg-white/10 backdrop-blur-md rounded-xl p-8
-                    border border-orange-200/30 cursor-pointer
-                    hover:bg-white/20 transition-all duration-300
-                  `}
-                  onClick={() => handleNavigation(option.route)}
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <motion.span 
-                      className="text-4xl mb-4"
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      {option.icon}
-                    </motion.span>
-                    <h3 className="font-cinzel text-xl mb-3 text-orange-900">
-                      {option.title}
-                    </h3>
-                    <p className="font-cormorant text-lg text-orange-800/80">
-                      {option.description}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Footer */}
-          <motion.footer
-            variants={fadeIn}
-            className="fixed bottom-0 w-full py-4 text-center text-orange-900/70 font-cormorant bg-white/10 backdrop-blur-sm"
-          >
-            <p>"Let your light shine before others" — Matthew 5:16</p>
-          </motion.footer>
         </div>
 
         {/* Page Transition */}
@@ -272,24 +292,57 @@ export default function DashboardPage() {
         body {
           margin: 0;
           padding: 0;
-          overflow-x: hidden;
+          overflow: hidden;
         }
 
-        ::-webkit-scrollbar {
-          width: 10px;
+        .star-container {
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          animation: starFloat 5s ease-in-out infinite;
+          will-change: transform;
         }
 
-        ::-webkit-scrollbar-track {
-          background: #FFF5F0;
+        .star {
+          width: 100%;
+          height: 100%;
+          background: #ffd700;
+          border-radius: 50%;
+          animation: starPulse 5s ease-in-out infinite;
+          will-change: opacity, transform;
+          box-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
         }
 
-        ::-webkit-scrollbar-thumb {
-          background: rgba(251, 146, 60, 0.3);
-          border-radius: 5px;
+        .divine-jesus-image {
+          will-change: transform;
+          animation: floatAnimation 6s ease-in-out infinite;
+          filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-          background: rgba(251, 146, 60, 0.5);
+        .glow-effect {
+          pointer-events: none;
+          background: radial-gradient(circle at center, rgba(255, 215, 0, 0.2), transparent 70%);
+          animation: glowPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes starFloat {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-10px) scale(1.1); }
+        }
+
+        @keyframes starPulse {
+          0%, 100% { opacity: 0.2; }
+          50% { opacity: 0.8; }
+        }
+
+        @keyframes floatAnimation {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
+        }
+
+        @keyframes glowPulse {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 0.8; }
         }
       `}</style>
     </>
