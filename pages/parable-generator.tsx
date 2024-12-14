@@ -3,6 +3,10 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { Canvas } from '@react-three/fiber';
+import { Particles } from "../components/particles";
+import { ParableCard } from '../components/ParableCard';
+import { ScrollInput } from '../components/ScrollInput';
 
 interface Message {
   id: string;
@@ -17,49 +21,120 @@ interface ParableCard {
   prompt: string;
   icon: string;
   theme: string;
+  description: string;
 }
 
 const parableCards: ParableCard[] = [
   {
     id: '1',
-    title: 'Wisdom & Understanding',
-    prompt: "Share a parable about the value of wisdom in today's world",
-    icon: '📖',
-    theme: 'wisdom'
+    title: 'Modern Wisdom',
+    prompt: "Share a parable about finding wisdom in today's digital age",
+    icon: '📱',
+    theme: 'wisdom',
+    description: 'Discover divine guidance for modern challenges'
   },
   {
     id: '2',
-    title: 'Faith & Trust',
-    prompt: "Tell me a parable about maintaining faith during difficult times",
-    icon: '🙏',
-    theme: 'faith'
+    title: 'Faith Through Trials',
+    prompt: "Tell a parable about maintaining faith during life's storms",
+    icon: '⚡',
+    theme: 'faith',
+    description: 'Find strength in times of difficulty'
   },
   {
     id: '3',
-    title: 'Love & Compassion',
-    prompt: "Create a modern parable about showing love to our neighbors",
+    title: 'Love Thy Neighbor',
+    prompt: "Create a parable about showing Christ's love in a divided world",
     icon: '❤️',
-    theme: 'love'
+    theme: 'love',
+    description: 'Learn to love as Jesus loved'
   },
   {
     id: '4',
-    title: 'Forgiveness',
-    prompt: "Share a parable about the power of forgiveness",
-    icon: '🕊️',
-    theme: 'forgiveness'
+    title: 'Divine Purpose',
+    prompt: "Share a parable about discovering God's purpose in our lives",
+    icon: '🌟',
+    theme: 'purpose',
+    description: 'Understand your sacred journey'
   }
 ];
-// pages/parable-generator.tsx
-// ... (previous imports and interfaces)
 
+const AngelResponse: React.FC<{ message: Message }> = ({ message }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="flex items-start space-x-4 mb-6"
+  >
+    <div className="flex-shrink-0">
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        className="w-12 h-12 rounded-full bg-gradient-to-r from-[#ffd700] to-[#ff8c00] 
+                   flex items-center justify-center shadow-lg"
+      >
+        <span className="text-2xl">👼</span>
+      </motion.div>
+    </div>
+    <div className="flex-grow">
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="bg-white/10 backdrop-blur-md rounded-2xl p-6 
+                   border border-white/20 shadow-xl"
+      >
+        <p className="font-cormorant text-lg text-white/90 italic">
+          {message.content}
+        </p>
+        <div className="mt-2 flex justify-end">
+          <span className="text-white/50 text-sm font-cinzel">
+            {new Date(message.timestamp).toLocaleTimeString([], { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            })}
+          </span>
+        </div>
+      </motion.div>
+    </div>
+  </motion.div>
+);
+
+const UserMessage: React.FC<{ message: Message }> = ({ message }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="flex justify-end mb-6"
+  >
+    <div className="max-w-[80%]">
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="bg-white/20 backdrop-blur-md rounded-2xl p-6 
+                   border border-white/30 shadow-xl"
+      >
+        <p className="font-cormorant text-lg text-white/90">
+          {message.content}
+        </p>
+        <div className="mt-2 flex justify-end">
+          <span className="text-white/50 text-sm font-cinzel">
+            {new Date(message.timestamp).toLocaleTimeString([], { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            })}
+          </span>
+        </div>
+      </motion.div>
+    </div>
+  </motion.div>
+);
 export default function ParableGenerator() {
     const router = useRouter();
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showCards, setShowCards] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
   
-    // Scroll to bottom of messages
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -70,8 +145,8 @@ export default function ParableGenerator() {
   
     const handleSendMessage = async (prompt: string) => {
       if (!prompt.trim()) return;
-  
-      // Add user message
+      
+      setShowCards(false);
       const userMessage: Message = {
         id: Date.now().toString(),
         type: 'user',
@@ -85,7 +160,7 @@ export default function ParableGenerator() {
   
       // TODO: Replace with your AI endpoint
       try {
-        // Simulate API call for now
+        // Simulate API call
         setTimeout(() => {
           const angelMessage: Message = {
             id: (Date.now() + 1).toString(),
@@ -109,10 +184,13 @@ export default function ParableGenerator() {
           <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
         </Head>
   
-        <main className="min-h-screen bg-gradient-to-b from-[#1a0f3c] via-[#2c1810] to-[#462305]">
-          {/* Divine Background with Particles */}
+        <main className="min-h-screen bg-gradient-to-b from-[#1a0f3c] via-[#2c1810] to-[#462305] overflow-hidden">
+          {/* Divine Background */}
           <div className="fixed inset-0 z-0">
-            {/* Your existing particles background */}
+            <Canvas camera={{ position: [0, 0, 70], fov: 60 }}>
+              <ambientLight intensity={0.5} />
+              <Particles />
+            </Canvas>
           </div>
   
           <div className="relative z-10 container mx-auto px-4 py-8">
@@ -122,110 +200,109 @@ export default function ParableGenerator() {
               animate={{ opacity: 1, y: 0 }}
               className="flex items-center justify-between mb-8"
             >
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05, x: -5 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => router.push('/dashboard')}
-                className="flex items-center space-x-2 text-white/80 hover:text-white/100 transition-colors"
+                className="flex items-center space-x-3 text-white/80 hover:text-white/100 
+                         transition-colors px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm
+                         border border-white/10"
               >
                 <span>←</span>
                 <span className="font-cinzel">Return to Sacred Dashboard</span>
-              </button>
+              </motion.button>
+              
+              {showCards && (
+                <motion.h1
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="font-cinzel text-2xl text-white/90 text-center"
+                >
+                  Choose Your Parable Theme
+                </motion.h1>
+              )}
             </motion.div>
   
-            {/* Parable Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              {parableCards.map((card) => (
-                <motion.div
-                  key={card.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 cursor-pointer
-                           hover:bg-white/15 transition-all duration-300"
-                  onClick={() => handleSendMessage(card.prompt)}
-                >
-                  <div className="flex items-center space-x-3 mb-3">
-                    <span className="text-2xl">{card.icon}</span>
-                    <h3 className="font-cinzel text-lg text-white/90">{card.title}</h3>
-                  </div>
-                  <p className="font-cormorant text-white/70">{card.prompt}</p>
-                </motion.div>
-              ))}
-            </div>
-  
-            {/* Chat Container */}
-            <div className="max-w-4xl mx-auto">
-              {/* Messages */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-t-xl p-6 h-[400px] overflow-y-auto">
-                <AnimatePresence>
-                  {messages.map((message) => (
-                    <motion.div
-                      key={message.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className={`mb-4 ${message.type === 'angel' ? 'flex flex-col items-start' : 'flex flex-col items-end'}`}
-                    >
-                      {message.type === 'angel' ? (
-                        <div className="flex items-start space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#ffd700] to-[#ff8c00] flex items-center justify-center">
-                            👼
+            {/* Content Area */}
+            <div className="max-w-6xl mx-auto">
+              <AnimatePresence mode="wait">
+                {showCards ? (
+                  // Parable Cards Grid
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  >
+                    {parableCards.map((card) => (
+                      <ParableCard
+                        key={card.id}
+                        card={card}
+                        onClick={() => handleSendMessage(card.prompt)}
+                      />
+                    ))}
+                  </motion.div>
+                ) : (
+                  // Chat Interface
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="max-w-4xl mx-auto"
+                  >
+                    {/* Messages Container */}
+                    <div className="mb-6 min-h-[400px] max-h-[600px] overflow-y-auto 
+                                 rounded-2xl bg-black/20 backdrop-blur-md p-6">
+                      {messages.map((message) => (
+                        message.type === 'angel' ? 
+                          <AngelResponse key={message.id} message={message} /> :
+                          <UserMessage key={message.id} message={message} />
+                      ))}
+                      
+                      {isLoading && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="flex items-center space-x-2 mb-6"
+                        >
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#ffd700] to-[#ff8c00] 
+                                      flex items-center justify-center">
+                            <span className="text-2xl">👼</span>
                           </div>
-                          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-[80%]">
-                            <p className="font-cormorant text-white/90 italic">{message.content}</p>
+                          <div className="flex space-x-2">
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ repeat: Infinity, duration: 1 }}
+                              className="w-3 h-3 rounded-full bg-white/50"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
+                              className="w-3 h-3 rounded-full bg-white/50"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
+                              className="w-3 h-3 rounded-full bg-white/50"
+                            />
                           </div>
-                        </div>
-                      ) : (
-                        <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 max-w-[80%]">
-                          <p className="font-cormorant text-white/90">{message.content}</p>
-                        </div>
+                        </motion.div>
                       )}
-                    </motion.div>
-                  ))}
-                  {isLoading && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex items-center space-x-2"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#ffd700] to-[#ff8c00] flex items-center justify-center">
-                        👼
-                      </div>
-                      <div className="flex space-x-2">
-                        <div className="w-2 h-2 bg-white/50 rounded-full animate-bounce" />
-                        <div className="w-2 h-2 bg-white/50 rounded-full animate-bounce delay-100" />
-                        <div className="w-2 h-2 bg-white/50 rounded-full animate-bounce delay-200" />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                <div ref={messagesEndRef} />
-              </div>
+                      <div ref={messagesEndRef} />
+                    </div>
   
-              {/* Input Area */}
-              <div className="relative">
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(inputValue)}
-                  placeholder="Seek divine wisdom..."
-                  className="w-full bg-white/10 backdrop-blur-sm border-t border-white/10 rounded-b-xl 
-                           px-6 py-4 text-white/90 placeholder-white/50
-                           focus:outline-none focus:ring-2 focus:ring-[#ffd700]/50
-                           font-cormorant text-lg"
-                />
-                <button
-                  onClick={() => handleSendMessage(inputValue)}
-                  disabled={isLoading}
-                  className="absolute right-4 top-1/2 -translate-y-1/2
-                           text-white/70 hover:text-white/90 transition-colors
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span className="text-2xl">✨</span>
-                </button>
-              </div>
+                    {/* Scroll Input */}
+                    <ScrollInput
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onSend={() => handleSendMessage(inputValue)}
+                      disabled={isLoading}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </main>
       </>
     );
-  }
+}
