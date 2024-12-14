@@ -3,5 +3,6 @@
 import { Particles } from './particles';
 import { DivineRays } from './divine-rays';
 import { DivineGlow } from './divine-glow';
+import { DivineLogo } from './DivineLogo';
 
-export { Particles, DivineRays, DivineGlow };
+export { Particles, DivineRays, DivineGlow, DivineLogo };
