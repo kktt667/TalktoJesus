@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
-import * as Icons from '../components';
 
 interface Scripture {
   verse: string;
@@ -14,7 +13,7 @@ interface Scripture {
 interface NavigationOption {
   title: string;
   route: string;
-  icon: JSX.Element;
+  icon: string;
   description: string;
   position: "left" | "right";
 }
@@ -42,34 +41,33 @@ const navigationOptions: NavigationOption[] = [
   {
     title: "Acts of Kindness",
     route: "/acts-generator",
-    icon: <Icons.ActsIcon />,
+    icon: "🕊️",
     description: "Share Christ's love through daily acts",
     position: "left"
   },
   {
     title: "Daily Prayer",
     route: "/prayer-generator",
-    icon: <Icons.PrayerIcon />,
+    icon: "🙏",
     description: "Strengthen your spiritual connection",
     position: "right"
   },
   {
     title: "Parables & Teachings",
     route: "/parable-generator",
-    icon: <Icons.ParableIcon />,
+    icon: "📖",
     description: "Wisdom through His words",
     position: "left"
   },
   {
     title: "Divine Guidance",
     route: "/wwjd-generator",
-    icon: <Icons.CrossIcon />,
+    icon: "✝️",
     description: "What would Jesus do?",
     position: "right"
   }
 ];
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -85,10 +83,6 @@ const itemVariants = {
   show: { opacity: 1, y: 0 }
 };
 
-const fadeIn = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1 }
-};
 export default function DashboardPage() {
   const router = useRouter();
   const { ready, authenticated, logout } = usePrivy();
@@ -132,40 +126,25 @@ export default function DashboardPage() {
         variants={containerVariants}
         className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#FFF5F0] to-[#FFE4D4]"
       >
-        {/* Cross Pattern Background */}
-        <motion.div
-          variants={fadeIn}
-          className="fixed inset-0 z-0 opacity-5 pattern-cross"
-        />
-
-        {/* Main Content */}
         <div className="relative z-10">
           {/* Header */}
           <motion.header
             variants={itemVariants}
             className="p-6 flex justify-between items-center bg-white/10 backdrop-blur-sm"
           >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center space-x-3"
-            >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              >
-                <Icons.CrossIcon />
-              </motion.div>
+            <div className="flex items-center space-x-3">
+              <span className="text-2xl">✝️</span>
               <h1 className="font-cinzel text-2xl text-orange-900">
                 Jesus Connect
               </h1>
-            </motion.div>
+            </div>
             <motion.button
-              whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={logout}
               className="px-6 py-3 text-orange-800 border border-orange-300 rounded-full
                        backdrop-blur-sm font-cinzel text-sm tracking-wider
-                       transition-colors duration-300"
+                       hover:bg-white/20 transition-colors duration-300"
             >
               Depart in Peace
             </motion.button>
@@ -182,7 +161,6 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
                 className="text-center max-w-2xl mx-auto p-6 bg-white/5 backdrop-blur-sm rounded-2xl"
               >
                 <div className="font-cormorant text-xl text-orange-800/80">
@@ -200,36 +178,26 @@ export default function DashboardPage() {
             variants={containerVariants}
             className="container mx-auto px-4 mt-16"
           >
-            <motion.div 
-              variants={containerVariants}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto"
-            >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
               {navigationOptions.map((option, index) => (
                 <motion.div
                   key={index}
                   variants={itemVariants}
                   whileHover={{ 
                     scale: 1.02,
-                    boxShadow: "0 0 30px rgba(251, 146, 60, 0.15)",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)"
+                    boxShadow: "0 0 30px rgba(251, 146, 60, 0.15)"
                   }}
                   whileTap={{ scale: 0.98 }}
                   className={`
                     ${option.position === "left" ? "md:mr-12" : "md:ml-12"}
                     bg-white/10 backdrop-blur-md rounded-xl p-8
                     border border-orange-200/30 cursor-pointer
-                    transition-all duration-300
+                    hover:bg-white/20 transition-all duration-300
                   `}
                   onClick={() => handleNavigation(option.route)}
                 >
                   <div className="flex flex-col items-center text-center">
-                    <motion.div
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                      className="text-orange-600 mb-4"
-                    >
-                      {option.icon}
-                    </motion.div>
+                    <span className="text-4xl mb-4">{option.icon}</span>
                     <h3 className="font-cinzel text-xl mb-3 text-orange-900">
                       {option.title}
                     </h3>
@@ -239,19 +207,18 @@ export default function DashboardPage() {
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
 
           {/* Footer */}
           <motion.footer
-            variants={fadeIn}
+            variants={itemVariants}
             className="fixed bottom-0 w-full py-4 text-center text-orange-800/60 font-cormorant bg-white/10 backdrop-blur-sm"
           >
             <p>"Let your light shine before others" — Matthew 5:16</p>
           </motion.footer>
         </div>
 
-        {/* Page Transition */}
         <AnimatePresence>
           {isTransitioning && (
             <motion.div
@@ -266,33 +233,11 @@ export default function DashboardPage() {
       </motion.main>
 
       <style jsx global>{`
-        .pattern-cross {
-          background-image: url("image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 10V50M10 30H50' stroke='%23FB923C' stroke-width='1' opacity='0.2'/%3E%3C/svg%3E");
-          background-repeat: repeat;
-        }
-
         body {
           margin: 0;
           padding: 0;
           overflow-x: hidden;
           background: #FFF5F0;
-        }
-
-        ::-webkit-scrollbar {
-          width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-          background: #FFF5F0;
-        }
-
-        ::-webkit-scrollbar-thumb {
-          background: rgba(251, 146, 60, 0.3);
-          border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-          background: rgba(251, 146, 60, 0.5);
         }
       `}</style>
     </>
