@@ -15,7 +15,7 @@ interface NavigationOption {
   route: string;
   icon: string;
   description: string;
-  position: "top" | "right" | "bottom" | "left";
+  position: string;
   angle: number;
 }
 
@@ -29,7 +29,7 @@ const scriptures: Scripture[] = [
     reference: "Philippians 4:13"
   },
   {
-    verse: "Be strong and courageous. Do not be afraid; do not be discouraged",
+    verse: "Be strong and courageous. Do not be afraid",
     reference: "Joshua 1:9"
   },
   {
@@ -43,33 +43,33 @@ const navigationOptions: NavigationOption[] = [
     title: "Acts of Kindness",
     route: "/acts-generator",
     icon: "🕊️",
-    description: "Share Christ's love through daily acts",
+    description: "Walk in His footsteps",
     position: "top",
-    angle: -45
+    angle: -60
   },
   {
     title: "Daily Prayer",
     route: "/prayer-generator",
     icon: "🙏",
-    description: "Strengthen your spiritual connection",
+    description: "Strengthen your faith",
     position: "right",
-    angle: 45
+    angle: 60
   },
   {
     title: "Parables & Teachings",
     route: "/parable-generator",
     icon: "📖",
-    description: "Wisdom through His words",
-    position: "bottom",
-    angle: 135
+    description: "Divine wisdom",
+    position: "bottom-right",
+    angle: 180
   },
   {
     title: "Divine Guidance",
     route: "/wwjd-generator",
     icon: "✝️",
-    description: "What would Jesus do?",
-    position: "left",
-    angle: -135
+    description: "Seek His way",
+    position: "bottom-left",
+    angle: -180
   }
 ];
 
@@ -78,19 +78,47 @@ const containerVariants = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.2
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, scale: 0.9 },
+  hidden: { opacity: 0, y: 20 },
   show: { 
     opacity: 1, 
-    scale: 1,
+    y: 0,
     transition: {
       type: "spring",
-      stiffness: 100
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
+
+const rayVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  show: {
+    opacity: [0.4, 0.6, 0.4],
+    scale: [1, 1.1, 1],
+    transition: {
+      repeat: Infinity,
+      duration: 3,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const floatVariants = {
+  hover: {
+    y: [-10, 10],
+    transition: {
+      y: {
+        repeat: Infinity,
+        duration: 2,
+        ease: "easeInOut",
+        repeatType: "reverse"
+      }
     }
   }
 };
@@ -137,134 +165,117 @@ export default function DashboardPage() {
         variants={containerVariants}
         className="relative min-h-screen overflow-hidden"
       >
-        {/* Background with clouds and light */}
+        {/* Background Image */}
         <div className="fixed inset-0 z-0">
           <img
-            src="/images/background.jpg"
+            src="/images/peach_background.jpg"
             alt="Divine Background"
-            className="w-full h-full object-cover opacity-80"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-[#FFF5F0]/20 backdrop-blur-[1px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/20 backdrop-blur-[1px]" />
         </div>
 
-        {/* Floating Stars Effect */}
+        {/* Divine Rays */}
         <div className="fixed inset-0 z-1">
-          {[...Array(15)].map((_, i) => (
-            <div 
-              key={i} 
-              className="star-container"
+          {[...Array(12)].map((_, i) => (
+            <motion.div
+              key={i}
+              variants={rayVariants}
+              className="absolute top-1/2 left-1/2 w-[800px] h-2 -translate-x-1/2 -translate-y-1/2"
               style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`
+                transform: `rotate(${i * 30}deg)`,
+                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
               }}
-            >
-              <div className="star"></div>
-            </div>
+            />
           ))}
         </div>
 
-        {/* Content */}
-        <div className="relative z-10">
+        {/* Content Container */}
+        <div className="relative z-10 min-h-screen flex flex-col">
           {/* Header */}
           <motion.header
             variants={itemVariants}
-            className="p-6 flex justify-between items-center bg-white/5 backdrop-blur-sm"
+            className="p-6 flex justify-between items-center bg-white/10 backdrop-blur-sm border-b border-white/20"
           >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center space-x-3"
-            >
-              <motion.span
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="text-2xl"
-              >
-                ✝️
-              </motion.span>
-              <h1 className="font-cinzel text-2xl text-[#ffd700]">
+            <div className="flex items-center space-x-3">
+              <h1 className="font-cinzel text-2xl text-rose-900">
                 Jesus Connect
               </h1>
-            </motion.div>
+            </div>
             <motion.button
-              whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 215, 0, 0.1)" }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={logout}
-              className="px-6 py-3 text-[#ffd700] border border-[#ffd700] rounded-full
-                       backdrop-blur-sm font-cinzel text-sm tracking-wider"
+              className="px-6 py-3 text-rose-900 border border-rose-300 rounded-full
+                       backdrop-blur-sm font-cinzel text-sm tracking-wider
+                       hover:bg-white/20 transition-all duration-300"
             >
               Depart in Peace
             </motion.button>
           </motion.header>
 
-          {/* Central Content */}
-          <div className="relative min-h-[calc(100vh-8rem)] flex items-center justify-center">
-            {/* Floating Jesus */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
+          {/* Main Content Area */}
+          <div className="flex-1 relative">
+            {/* Central Jesus Figure */}
+            <motion.div
+              variants={floatVariants}
+              animate="hover"
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            >
               <div className="relative">
-                <img 
-                  src="/images/jesus1.png" 
+                <img
+                  src="/images/jesus1.png"
                   alt="Jesus"
-                  className="w-[300px] divine-jesus-image"
+                  className="w-[500px] h-auto filter drop-shadow-2xl"
                 />
-                <div className="absolute inset-0 glow-effect"></div>
+                <div className="absolute inset-0 bg-gradient-radial opacity-50" />
+              </div>
+            </motion.div>
+
+            {/* Navigation Buttons */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative w-[900px] h-[900px]">
+                {navigationOptions.map((option, index) => (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    whileHover={{ 
+                      scale: 1.05,
+                      backgroundColor: "rgba(255, 255, 255, 0.2)"
+                    }}
+                    className="absolute w-64 cursor-pointer"
+                    style={{
+                      top: '50%',
+                      left: '50%',
+                      transform: `rotate(${option.angle}deg) translate(300px) rotate(-${option.angle}deg)`,
+                    }}
+                    onClick={() => handleNavigation(option.route)}
+                  >
+                    <div className={`
+                      bg-white/10 backdrop-blur-md rounded-xl p-6
+                      border border-white/30 transition-all duration-300
+                      hover:border-rose-200 group
+                    `}>
+                      <span className="text-4xl mb-4 block">
+                        {option.icon}
+                      </span>
+                      <h3 className="font-cinzel text-xl mb-2 text-rose-900 group-hover:text-rose-800">
+                        {option.title}
+                      </h3>
+                      <p className="font-cormorant text-lg text-rose-800/80">
+                        {option.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
-
-            {/* Navigation Options */}
-            <div className="relative w-[800px] h-[800px]">
-              {navigationOptions.map((option, index) => (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  whileHover={{ 
-                    scale: 1.05,
-                    boxShadow: "0 0 30px rgba(255, 215, 0, 0.3)"
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  className="absolute w-64 cursor-pointer"
-                  style={{
-                    top: '50%',
-                    left: '50%',
-                    transform: `rotate(${option.angle}deg) translate(250px) rotate(-${option.angle}deg)`,
-                  }}
-                  onClick={() => handleNavigation(option.route)}
-                >
-                  <div className={`
-                    bg-white/10 
-                    backdrop-blur-md 
-                    rounded-xl 
-                    p-6 
-                    border 
-                    border-[#ffd700]/30 
-                    hover:bg-white/20 
-                    transition-all 
-                    duration-300 
-                    text-center
-                  `}>
-                    <motion.span 
-                      className="text-4xl mb-4 block"
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      {option.icon}
-                    </motion.span>
-                    <h3 className="font-cinzel text-xl mb-2 text-[#ffd700]">
-                      {option.title}
-                    </h3>
-                    <p className="font-cormorant text-lg text-[#ffd700]/80">
-                      {option.description}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            </div>
+          </div>
 
           {/* Scripture Quote */}
           <motion.div
             variants={itemVariants}
-            className="fixed bottom-0 left-0 right-0 p-6 text-center bg-black/10 backdrop-blur-sm"
+            className="relative py-4 bg-white/10 backdrop-blur-sm border-t border-white/20"
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -272,10 +283,12 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="font-cormorant text-xl text-[#ffd700]"
+                className="text-center"
               >
-                <p className="italic">{scriptures[currentScripture]?.verse}</p>
-                <p className="text-sm mt-2 font-cinzel">
+                <p className="font-cormorant text-xl text-rose-900 italic">
+                  {scriptures[currentScripture]?.verse}
+                </p>
+                <p className="text-sm mt-1 font-cinzel text-rose-800">
                   — {scriptures[currentScripture]?.reference}
                 </p>
               </motion.div>
@@ -304,54 +317,34 @@ export default function DashboardPage() {
           overflow: hidden;
         }
 
-        .star-container {
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          animation: starFloat 5s ease-in-out infinite;
-          will-change: transform;
+        .bg-gradient-radial {
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.2) 0%,
+            transparent 70%
+          );
         }
 
-        .star {
-          width: 100%;
-          height: 100%;
-          background: #ffd700;
-          border-radius: 50%;
-          animation: starPulse 5s ease-in-out infinite;
-          will-change: opacity, transform;
-          box-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
-        }
-
-        .divine-jesus-image {
-          will-change: transform;
-          animation: floatAnimation 6s ease-in-out infinite;
-          filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
-        }
-
-        .glow-effect {
-          pointer-events: none;
-          background: radial-gradient(circle at center, rgba(255, 215, 0, 0.2), transparent 70%);
-          animation: glowPulse 6s ease-in-out infinite;
-        }
-
-        @keyframes starFloat {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-10px) scale(1.1); }
-        }
-
-        @keyframes starPulse {
-          0%, 100% { opacity: 0.2; }
-          50% { opacity: 0.8; }
-        }
-
-        @keyframes floatAnimation {
+        @keyframes float {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-20px); }
         }
 
-        @keyframes glowPulse {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 0.8; }
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: rgba(225, 29, 72, 0.2);
+          border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(225, 29, 72, 0.3);
         }
       `}</style>
     </>
