@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
-import * as Icons from '../components/icons';
+import * as Icons from '../components';
 
 interface Scripture {
   verse: string;

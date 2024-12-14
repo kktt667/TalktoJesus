@@ -22,8 +22,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@/components/*": ["./components/*"]
+      "@/*": ["./*"]
     }
   },
   "include": [
@@ -32,9 +31,8 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "src",
-    "global.d.ts",
-    "components/**/*"
+    "components/**/*",
+    "pages/**/*"
   ],
   "exclude": ["node_modules"]
 }
