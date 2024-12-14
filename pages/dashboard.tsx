@@ -160,21 +160,24 @@ export default function DashboardPage(): JSX.Element | null {
       </Head>
 
       <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#1a0f3c] via-[#2c1810] to-[#462305]">
-        {/* Divine Background */}
+      {/* Divine Background - Full Screen Canvas */}
+      <div className="fixed inset-0 w-full h-full">
         <Canvas
           camera={{ position: [0, 0, 70], fov: 60 }}
-          className="fixed inset-0 z-0"
-          style={{ background: 'linear-gradient(to bottom, #1a0f3c, #2c1810)' }}
+          style={{ 
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(to bottom, #1a0f3c, #2c1810)'
+          }}
         >
           <ambientLight intensity={0.5} />
           <Particles />
         </Canvas>
+      </div>
 
-        {/* Additional gradient overlay for depth */}
-        <div className="fixed inset-0 z-1 bg-gradient-radial from-transparent via-black/10 to-black/30 pointer-events-none" />
-
-        {/* Holy Overlay */}
-        <div className="fixed inset-0 z-1 bg-gradient-radial from-transparent to-black/20" />
+      {/* Holy Overlay */}
+      <div className="fixed inset-0 bg-gradient-radial from-transparent to-black/20" />
 
         {/* Main Content */}
         <div className="relative z-10">
