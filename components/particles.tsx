@@ -1,63 +1,45 @@
 // components/particles.tsx
-import { useRef, useMemo } from 'react';
+import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
 import { Points, PointMaterial } from '@react-three/drei';
+import * as THREE from 'three';
 
-interface ParticleProps {
-  count?: number;
-}
-
-export function Particles({ count = 5000 }: ParticleProps) {
+export function Particles({ count = 5000 }) {
   const points = useRef<THREE.Points>(null);
-  const light = useRef<THREE.PointLight>(null);
 
-  // Create particles with golden divine colors
-  const positions = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 50;      // x
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 50;  // y
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 50;  // z
-    }
-    return positions;
-  }, [count]);
+  // Create a larger spread for particles
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count * 3; i += 3) {
+    positions[i] = (Math.random() - 0.5) * 100;     // x coordinate
+    positions[i + 1] = (Math.random() - 0.5) * 100; // y coordinate
+    positions[i + 2] = (Math.random() - 0.5) * 50;  // z coordinate
+  }
 
-  // Animate particles
-  useFrame(({ clock }) => {
+  useFrame((state) => {
     if (points.current) {
-      points.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.2) * 0.3;
-      points.current.rotation.y = Math.sin(clock.getElapsedTime() * 0.1) * 0.3;
-    }
-    if (light.current) {
-      light.current.intensity = 1 + Math.sin(clock.getElapsedTime()) * 0.3;
+      points.current.rotation.x = state.clock.getElapsedTime() * 0.05;
+      points.current.rotation.y = state.clock.getElapsedTime() * 0.03;
     }
   });
 
   return (
-    <>
-      <ambientLight intensity={0.5} />
-      <pointLight
-        ref={light}
-        position={[0, 0, 10]}
-        color="#ffd700"
-        intensity={1.5}
-      />
-      <Points
-        ref={points}
-        positions={positions}
-        stride={3}
-        frustumCulled={false}
-      >
-        <PointMaterial
-          transparent
-          color="#ffd700"
-          size={0.1}
-          sizeAttenuation
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
+    <Points ref={points}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={positions.length / 3}
+          array={positions}
+          itemSize={3}
         />
-      </Points>
-    </>
-  );
-}
+      </bufferGeometry>
+      <PointMaterial
+        transparent
+        size={0.15}
+        sizeAttenuation
+        color="#ffd700"
+        opacity={0.6}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </Points>
+  );}
