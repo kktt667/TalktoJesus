@@ -230,9 +230,18 @@ export default function DashboardPage() {
                   }}
                   onClick={() => handleNavigation(option.route)}
                 >
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-6
-                                border border-[#ffd700]/30 hover:bg-white/20 
-                                transition-all duration-300 text-center">
+                  <div className={`
+                    bg-white/10 
+                    backdrop-blur-md 
+                    rounded-xl 
+                    p-6 
+                    border 
+                    border-[#ffd700]/30 
+                    hover:bg-white/20 
+                    transition-all 
+                    duration-300 
+                    text-center
+                  `}>
                     <motion.span 
                       className="text-4xl mb-4 block"
                       whileHover={{ rotate: 360, scale: 1.1 }}
@@ -250,7 +259,7 @@ export default function DashboardPage() {
                 </motion.div>
               ))}
             </div>
-          </div>
+            </div>
 
           {/* Scripture Quote */}
           <motion.div
