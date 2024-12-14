@@ -83,6 +83,11 @@ const itemVariants = {
   show: { opacity: 1, y: 0 }
 };
 
+const fadeIn = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1 }
+};
+
 export default function DashboardPage() {
   const router = useRouter();
   const { ready, authenticated, logout } = usePrivy();
@@ -124,27 +129,51 @@ export default function DashboardPage() {
         initial="hidden"
         animate="show"
         variants={containerVariants}
-        className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#FFF5F0] to-[#FFE4D4]"
+        className="relative min-h-screen overflow-hidden"
       >
+        {/* Background Image */}
+        <div 
+          className="fixed inset-0 z-0"
+          style={{
+            backgroundImage: "url('/images/peach_background.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+
+        {/* Subtle Overlay */}
+        <div className="fixed inset-0 z-0 bg-[#FFF5F0]/10 backdrop-blur-[2px]" />
+
+        {/* Content */}
         <div className="relative z-10">
           {/* Header */}
           <motion.header
             variants={itemVariants}
-            className="p-6 flex justify-between items-center bg-white/10 backdrop-blur-sm"
+            className="p-6 flex justify-between items-center bg-white/5 backdrop-blur-sm"
           >
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">✝️</span>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center space-x-3"
+            >
+              <motion.span
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="text-2xl"
+              >
+                ✝️
+              </motion.span>
               <h1 className="font-cinzel text-2xl text-orange-900">
                 Jesus Connect
               </h1>
-            </div>
+            </motion.div>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={logout}
               className="px-6 py-3 text-orange-800 border border-orange-300 rounded-full
                        backdrop-blur-sm font-cinzel text-sm tracking-wider
-                       hover:bg-white/20 transition-colors duration-300"
+                       hover:bg-white/10 transition-all duration-300"
             >
               Depart in Peace
             </motion.button>
@@ -161,9 +190,9 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="text-center max-w-2xl mx-auto p-6 bg-white/5 backdrop-blur-sm rounded-2xl"
+                className="text-center max-w-2xl mx-auto p-6 bg-white/10 backdrop-blur-sm rounded-2xl"
               >
-                <div className="font-cormorant text-xl text-orange-800/80">
+                <div className="font-cormorant text-xl text-orange-900">
                   <p className="italic">{scriptures[currentScripture]?.verse}</p>
                   <p className="text-sm mt-2 font-cinzel">
                     — {scriptures[currentScripture]?.reference}
@@ -197,7 +226,13 @@ export default function DashboardPage() {
                   onClick={() => handleNavigation(option.route)}
                 >
                   <div className="flex flex-col items-center text-center">
-                    <span className="text-4xl mb-4">{option.icon}</span>
+                    <motion.span 
+                      className="text-4xl mb-4"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      {option.icon}
+                    </motion.span>
                     <h3 className="font-cinzel text-xl mb-3 text-orange-900">
                       {option.title}
                     </h3>
@@ -212,13 +247,14 @@ export default function DashboardPage() {
 
           {/* Footer */}
           <motion.footer
-            variants={itemVariants}
-            className="fixed bottom-0 w-full py-4 text-center text-orange-800/60 font-cormorant bg-white/10 backdrop-blur-sm"
+            variants={fadeIn}
+            className="fixed bottom-0 w-full py-4 text-center text-orange-900/70 font-cormorant bg-white/10 backdrop-blur-sm"
           >
             <p>"Let your light shine before others" — Matthew 5:16</p>
           </motion.footer>
         </div>
 
+        {/* Page Transition */}
         <AnimatePresence>
           {isTransitioning && (
             <motion.div
@@ -237,7 +273,23 @@ export default function DashboardPage() {
           margin: 0;
           padding: 0;
           overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
           background: #FFF5F0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: rgba(251, 146, 60, 0.3);
+          border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(251, 146, 60, 0.5);
         }
       `}</style>
     </>
