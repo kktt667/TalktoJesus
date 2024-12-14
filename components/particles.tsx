@@ -1,19 +1,21 @@
 // components/particles.tsx
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-export function Particles({ count = 5000 }) {
+export function Particles({ count = 6000 }) {
   const points = useRef<THREE.Points>(null);
 
-  // Create a larger spread for particles
-  const positions = new Float32Array(count * 3);
-  for (let i = 0; i < count * 3; i += 3) {
-    positions[i] = (Math.random() - 0.5) * 100;     // x coordinate
-    positions[i + 1] = (Math.random() - 0.5) * 100; // y coordinate
-    positions[i + 2] = (Math.random() - 0.5) * 50;  // z coordinate
-  }
+  const positions = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 150;     // Increased spread
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 150; // Increased spread
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 150; // Increased spread
+    }
+    return positions;
+  }, [count]);
 
   useFrame((state) => {
     if (points.current) {
@@ -23,21 +25,12 @@ export function Particles({ count = 5000 }) {
   });
 
   return (
-    <Points ref={points}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={positions.length / 3}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
+    <Points ref={points} positions={positions} stride={3}>
       <PointMaterial
         transparent
-        size={0.15}
-        sizeAttenuation
         color="#ffd700"
-        opacity={0.6}
+        size={0.5}
+        sizeAttenuation={true}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
       />

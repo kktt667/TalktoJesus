@@ -161,19 +161,13 @@ export default function DashboardPage(): JSX.Element | null {
 
       <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#1a0f3c] via-[#2c1810] to-[#462305]">
         {/* Divine Background */}
-        <Canvas 
-          camera={{ 
-            position: [0, 0, 1], 
-            fov: 75,
-            near: 0.1,
-            far: 1000 
-          }} 
+        <Canvas
+          camera={{ position: [0, 0, 70], fov: 60 }}
           className="fixed inset-0 z-0"
-          style={{ background: 'radial-gradient(circle at center, #1a0f3c 0%, #0a0510 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, #1a0f3c, #2c1810)' }}
         >
           <ambientLight intensity={0.5} />
-          <Particles count={8000} /> {/* Increased particle count */}
-          <fogExp2 attach="fog" args={['#1a0f3c', 0.001]} />
+          <Particles />
         </Canvas>
 
         {/* Additional gradient overlay for depth */}
