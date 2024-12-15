@@ -6,7 +6,6 @@ import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
 import { Canvas } from '@react-three/fiber';
 import { Particles } from "../components";
-import { DivineLogo } from "../components/DivineLogo";
 
 interface NavigationItem {
   id: string;
@@ -184,7 +183,6 @@ export default function DashboardPage(): JSX.Element | null {
           {/* Header */}
           <header className="fixed top-0 left-0 right-0 bg-black/10 backdrop-blur-sm border-b border-white/10">
             <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-              <DivineLogo />
               <DivineButton onClick={() => void logout()}>
                 Depart in Peace
               </DivineButton>

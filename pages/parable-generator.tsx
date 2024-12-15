@@ -71,7 +71,7 @@ const AngelResponse: React.FC<{ message: Message }> = ({ message }) => (
         className="w-12 h-12 rounded-full overflow-hidden shadow-lg"
       >
         <img 
-          src="/angel.png" 
+          src="public/images/angel.png" 
           alt="Angel" 
           className="w-full h-full object-cover"
         />
@@ -326,7 +326,7 @@ export default function ParableGenerator() {
                             <div className="relative h-full p-6 flex flex-col items-center justify-between">
                               <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16">
                                 <motion.img 
-                                  src="/dove.png" 
+                                  src="public/images/dove.png" 
                                   alt="Dove"
                                   className="w-full h-auto"
                                   initial={{ opacity: 0.5 }}
