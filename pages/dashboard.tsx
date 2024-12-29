@@ -5,6 +5,12 @@ import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from 'next/image';
 
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
+
 interface NavigationItem {
   id: string;
   title: string;
@@ -128,7 +134,9 @@ const NavigationButton: React.FC<{
 export default function DashboardPage(): JSX.Element | null {
   const router = useRouter();
   const { ready, authenticated, logout } = usePrivy();
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
+  const [inputMessage, setInputMessage] = useState("");
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -136,11 +144,109 @@ export default function DashboardPage(): JSX.Element | null {
     }
   }, [ready, authenticated, router]);
 
-  const handleNavigation = (route: string, id: string): void => {
-    setSelectedItem(id);
-    setTimeout(() => {
-      void router.push(route);
-    }, 1000);
+  const handleChatOpen = (id: string) => {
+    setSelectedChat(id);
+    if (!messages[id]) {
+      setMessages(prev => ({
+        ...prev,
+        [id]: []
+      }));
+    }
+  };
+
+  const handleChatClose = () => {
+    setSelectedChat(null);
+  };
+
+  const handleSendMessage = async (chatId: string) => {
+    if (!inputMessage.trim()) return;
+
+    const newMessage: ChatMessage = {
+      role: 'user',
+      content: inputMessage,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => ({
+      ...prev,
+      [chatId]: [...(prev[chatId] || []), newMessage]
+    }));
+    setInputMessage("");
+
+    // TODO: Add API call here
+  };
+
+  const ChatInterface = ({ chatId }: { chatId: string }) => {
+    const item = navigationItems.find(i => i.id === chatId);
+    if (!item) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        className="fixed inset-x-4 bottom-4 md:inset-x-auto md:right-4 md:bottom-4 md:w-[400px] 
+                   bg-black/80 backdrop-blur-lg rounded-lg border border-gold/30 shadow-xl z-30
+                   flex flex-col h-[600px]"
+      >
+        {/* Chat Header */}
+        <div className="p-4 border-b border-gold/30 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <span className="text-2xl">{item.icon}</span>
+            <h3 className="font-cinzel text-gold text-lg">{item.title}</h3>
+          </div>
+          <button 
+            onClick={handleChatClose}
+            className="text-white/60 hover:text-white transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Chat Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages[chatId]?.map((msg, idx) => (
+            <div
+              key={idx}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`max-w-[80%] p-3 rounded-lg ${
+                msg.role === 'user' 
+                  ? 'bg-gold/20 text-white ml-auto' 
+                  : 'bg-white/10 text-white'
+              }`}>
+                <p className="font-cormorant">{msg.content}</p>
+                <p className="text-xs text-white/60 mt-1">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Chat Input */}
+        <div className="p-4 border-t border-gold/30">
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatId)}
+              placeholder={`Ask for ${item.description.toLowerCase()}...`}
+              className="flex-1 bg-black/40 border border-gold/30 rounded-full px-4 py-2
+                         text-white placeholder-white/50 focus:outline-none focus:border-gold/50"
+            />
+            <button
+              onClick={() => handleSendMessage(chatId)}
+              className="bg-gold/20 hover:bg-gold/30 text-white rounded-full p-2
+                         transition-colors duration-200"
+            >
+              →
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    );
   };
 
   if (!ready || !authenticated) {
@@ -172,61 +278,91 @@ export default function DashboardPage(): JSX.Element | null {
 
         {/* Light Rays */}
         <div className="fixed inset-0 z-[1]">
-          {/* Central Glow */}
+          {/* Natural Sunburst Effect */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.3)_0%,transparent_70%)]" />
           <div 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] animate-pulse-opacity"
+            className="absolute inset-0 animate-pulse-opacity"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.25) 0%, rgba(218,165,32,0.15) 30%, rgba(218,165,32,0.05) 60%, transparent 80%)',
+              background: `
+                conic-gradient(
+                  from 0deg at 50% 50%,
+                  transparent 0deg,
+                  rgba(218,165,32,0.15) 5deg,
+                  transparent 10deg,
+                  rgba(218,165,32,0.15) 15deg,
+                  transparent 20deg,
+                  rgba(218,165,32,0.15) 25deg,
+                  transparent 30deg,
+                  rgba(218,165,32,0.15) 35deg,
+                  transparent 40deg,
+                  rgba(218,165,32,0.15) 45deg,
+                  transparent 50deg,
+                  rgba(218,165,32,0.15) 55deg,
+                  transparent 60deg,
+                  rgba(218,165,32,0.15) 65deg,
+                  transparent 70deg,
+                  rgba(218,165,32,0.15) 75deg,
+                  transparent 80deg,
+                  rgba(218,165,32,0.15) 85deg,
+                  transparent 90deg,
+                  rgba(218,165,32,0.15) 95deg,
+                  transparent 100deg,
+                  rgba(218,165,32,0.15) 105deg,
+                  transparent 110deg,
+                  rgba(218,165,32,0.15) 115deg,
+                  transparent 120deg,
+                  rgba(218,165,32,0.15) 125deg,
+                  transparent 130deg,
+                  rgba(218,165,32,0.15) 135deg,
+                  transparent 140deg,
+                  rgba(218,165,32,0.15) 145deg,
+                  transparent 150deg,
+                  rgba(218,165,32,0.15) 155deg,
+                  transparent 160deg,
+                  rgba(218,165,32,0.15) 165deg,
+                  transparent 170deg,
+                  rgba(218,165,32,0.15) 175deg,
+                  transparent 180deg,
+                  rgba(218,165,32,0.15) 185deg,
+                  transparent 190deg,
+                  rgba(218,165,32,0.15) 195deg,
+                  transparent 200deg,
+                  rgba(218,165,32,0.15) 205deg,
+                  transparent 210deg,
+                  rgba(218,165,32,0.15) 215deg,
+                  transparent 220deg,
+                  rgba(218,165,32,0.15) 225deg,
+                  transparent 230deg,
+                  rgba(218,165,32,0.15) 235deg,
+                  transparent 240deg,
+                  rgba(218,165,32,0.15) 245deg,
+                  transparent 250deg,
+                  rgba(218,165,32,0.15) 255deg,
+                  transparent 260deg,
+                  rgba(218,165,32,0.15) 265deg,
+                  transparent 270deg,
+                  rgba(218,165,32,0.15) 275deg,
+                  transparent 280deg,
+                  rgba(218,165,32,0.15) 285deg,
+                  transparent 290deg,
+                  rgba(218,165,32,0.15) 295deg,
+                  transparent 300deg,
+                  rgba(218,165,32,0.15) 305deg,
+                  transparent 310deg,
+                  rgba(218,165,32,0.15) 315deg,
+                  transparent 320deg,
+                  rgba(218,165,32,0.15) 325deg,
+                  transparent 330deg,
+                  rgba(218,165,32,0.15) 335deg,
+                  transparent 340deg,
+                  rgba(218,165,32,0.15) 345deg,
+                  transparent 350deg,
+                  rgba(218,165,32,0.15) 355deg,
+                  transparent 360deg
+                )
+              `
             }}
           />
-          
-          {/* Animated Light Rays */}
-          <div className="absolute inset-0 origin-center animate-spin-slow">
-            {[...Array(48)].map((_, i) => {
-              // Create groups of rays with different characteristics
-              const rayGroup = i % 4; // 0, 1, 2, 3
-              let baseOpacity, width;
-              
-              switch(rayGroup) {
-                case 0: // Primary rays
-                  baseOpacity = 0.4;
-                  width = 2;
-                  break;
-                case 1: // Secondary rays
-                  baseOpacity = 0.3;
-                  width = 1.5;
-                  break;
-                case 2: // Tertiary rays
-                  baseOpacity = 0.2;
-                  width = 1;
-                  break;
-                default: // Fine rays
-                  baseOpacity = 0.15;
-                  width = 0.5;
-              }
-              
-              return (
-                <div
-                  key={i}
-                  className={`absolute top-1/2 left-1/2 ${rayGroup === 0 ? 'animate-pulse-opacity' : ''} ${rayGroup <= 1 ? 'animate-ray-width' : ''}`}
-                  style={{
-                    width: `${width}px`,
-                    height: '300vh',
-                    background: `linear-gradient(to bottom, 
-                      rgba(218,165,32,${baseOpacity}) 0%, 
-                      rgba(218,165,32,${baseOpacity * 0.8}) 15%, 
-                      rgba(218,165,32,${baseOpacity * 0.6}) 30%, 
-                      rgba(218,165,32,${baseOpacity * 0.4}) 50%, 
-                      rgba(218,165,32,${baseOpacity * 0.2}) 70%, 
-                      transparent 100%)`,
-                    transform: `rotate(${i * (360/48)}deg) translateX(-50%)`,
-                    transformOrigin: '50% 0',
-                    opacity: rayGroup === 0 ? 1 : rayGroup === 1 ? 0.8 : rayGroup === 2 ? 0.6 : 0.4,
-                  }}
-                />
-              );
-            })}
-          </div>
         </div>
 
         {/* Content Container */}
@@ -250,7 +386,7 @@ export default function DashboardPage(): JSX.Element | null {
                 <NavigationButton
                   key={item.id}
                   item={item}
-                  onClick={() => handleNavigation(item.route, item.id)}
+                  onClick={() => handleChatOpen(item.id)}
                 />
               ))}
             </div>
@@ -268,7 +404,6 @@ export default function DashboardPage(): JSX.Element | null {
                 }}
                 className="relative w-96 h-96"
               >
-                {/* Cross Glow */}
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
                   style={{
@@ -291,59 +426,28 @@ export default function DashboardPage(): JSX.Element | null {
                 <NavigationButton
                   key={item.id}
                   item={item}
-                  onClick={() => handleNavigation(item.route, item.id)}
+                  onClick={() => handleChatOpen(item.id)}
                 />
               ))}
             </div>
           </div>
         </div>
 
-        {/* Page Transition */}
+        {/* Chat Interface */}
         <AnimatePresence>
-          {selectedItem && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black"
-              transition={{ duration: 0.7 }}
-            />
-          )}
+          {selectedChat && <ChatInterface chatId={selectedChat} />}
         </AnimatePresence>
       </main>
 
       <style jsx global>{`
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
         @keyframes pulse-opacity {
-          0% { opacity: 0.3; }
+          0% { opacity: 0.4; }
           50% { opacity: 0.8; }
-          100% { opacity: 0.3; }
-        }
-
-        @keyframes ray-width {
-          0% { transform: scaleX(0.8); }
-          50% { transform: scaleX(1.2); }
-          100% { transform: scaleX(0.8); }
-        }
-
-        .animate-spin-slow {
-          animation: spin-slow 180s linear infinite;
+          100% { opacity: 0.4; }
         }
 
         .animate-pulse-opacity {
           animation: pulse-opacity 12s ease-in-out infinite;
-        }
-
-        .animate-ray-width {
-          animation: ray-width 15s ease-in-out infinite;
         }
 
         body {
