@@ -72,16 +72,30 @@ const NavigationButton: React.FC<{
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className="w-full bg-black/5 rounded-lg p-6
+    className="w-full bg-black/40 rounded-lg p-8
                backdrop-blur-sm border border-gold/30
-               transition-all duration-300 hover:shadow-[0_0_15px_rgba(218,165,32,0.3)]
+               transition-all duration-300 
+               hover:shadow-[0_0_25px_rgba(218,165,32,0.3)]
                relative overflow-hidden group"
+    style={{
+      backgroundImage: `
+        radial-gradient(circle at 50% 0%, rgba(218,165,32,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(218,165,32,0.1) 0%, transparent 50%)
+      `
+    }}
   >
-    <div className="absolute inset-0 bg-gradient-to-b from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    {/* Ornate Corner Decorations */}
+    <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-gold/40 rounded-tl-lg" />
+    <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-gold/40 rounded-tr-lg" />
+    <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-gold/40 rounded-bl-lg" />
+    <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-gold/40 rounded-br-lg" />
+    
+    {/* Hover Overlay */}
+    <div className="absolute inset-0 bg-gradient-to-b from-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     
     <div className="relative z-10">
       <div className="flex flex-col items-center text-center space-y-4">
-        <span className="text-4xl mb-2">{item.icon}</span>
+        <span className="text-4xl mb-2 transform transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
         <h3 className="font-cinzel text-gold text-xl font-semibold tracking-wider">
           {item.title}
         </h3>
@@ -90,7 +104,11 @@ const NavigationButton: React.FC<{
         </p>
       </div>
       
-      <div className="mt-6 pt-4 border-t border-gold/20">
+      <div className="mt-6 pt-4 border-t border-gold/20 relative">
+        {/* Ornate Divider */}
+        <div className="absolute -top-px left-1/2 -translate-x-1/2 w-16 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 border border-gold/30" />
+        
         <p className="font-cormorant italic text-gray-300/90 text-sm">
           "{item.verse.text}"
         </p>
@@ -134,9 +152,36 @@ export default function DashboardPage(): JSX.Element | null {
         />
       </Head>
 
-      <main className="min-h-screen bg-[#0a0a0f]">
-        {/* Background Overlay */}
-        <div className="fixed inset-0 bg-gradient-to-b from-black via-[#0a0a0f] to-black opacity-90" />
+      <main className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
+        {/* Background Image */}
+        <div className="fixed inset-0">
+          <Image
+            src="/images/background.jpg"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+            alt="Background"
+            className="opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50" />
+        </div>
+
+        {/* Light Rays */}
+        <div className="fixed inset-0 opacity-30">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.1)_0%,transparent_60%)]" />
+          {/* Animated Light Rays */}
+          <div className="absolute inset-0 origin-center animate-spin-slow">
+            {[...Array(12)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute top-1/2 left-1/2 w-0.5 h-[150vh] bg-gradient-to-b from-gold/20 via-gold/5 to-transparent"
+                style={{
+                  transform: `rotate(${i * 30}deg) translateX(-50%)`,
+                }}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* Content Container */}
         <div className="relative z-10 container mx-auto px-4 py-8">
@@ -185,7 +230,7 @@ export default function DashboardPage(): JSX.Element | null {
                   layout="fill"
                   objectFit="contain"
                   alt="Sacred Cross"
-                  className="filter drop-shadow-[0_0_15px_rgba(218,165,32,0.3)]"
+                  className="filter drop-shadow-[0_0_30px_rgba(218,165,32,0.4)]"
                 />
               </motion.div>
             </div>
@@ -218,6 +263,19 @@ export default function DashboardPage(): JSX.Element | null {
       </main>
 
       <style jsx global>{`
+        @keyframes spin-slow {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .animate-spin-slow {
+          animation: spin-slow 60s linear infinite;
+        }
+
         body {
           margin: 0;
           padding: 0;
