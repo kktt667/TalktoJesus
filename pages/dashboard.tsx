@@ -174,21 +174,58 @@ export default function DashboardPage(): JSX.Element | null {
         <div className="fixed inset-0 z-[1]">
           {/* Central Glow */}
           <div 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.3)_0%,transparent_70%)]"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] animate-pulse-opacity"
+            style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.25) 0%, rgba(218,165,32,0.15) 30%, rgba(218,165,32,0.05) 60%, transparent 80%)',
+            }}
           />
           
           {/* Animated Light Rays */}
           <div className="absolute inset-0 origin-center animate-spin-slow">
-            {[...Array(24)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute top-1/2 left-1/2 w-1 h-[200vh]"
-                style={{
-                  background: `linear-gradient(to bottom, rgba(218,165,32,${i % 2 === 0 ? '0.4' : '0.2'}), transparent 80%)`,
-                  transform: `rotate(${i * 15}deg) translateX(-50%)`,
-                }}
-              />
-            ))}
+            {[...Array(48)].map((_, i) => {
+              // Create groups of rays with different characteristics
+              const rayGroup = i % 4; // 0, 1, 2, 3
+              let baseOpacity, width;
+              
+              switch(rayGroup) {
+                case 0: // Primary rays
+                  baseOpacity = 0.4;
+                  width = 2;
+                  break;
+                case 1: // Secondary rays
+                  baseOpacity = 0.3;
+                  width = 1.5;
+                  break;
+                case 2: // Tertiary rays
+                  baseOpacity = 0.2;
+                  width = 1;
+                  break;
+                default: // Fine rays
+                  baseOpacity = 0.15;
+                  width = 0.5;
+              }
+              
+              return (
+                <div
+                  key={i}
+                  className={`absolute top-1/2 left-1/2 ${rayGroup === 0 ? 'animate-pulse-opacity' : ''} ${rayGroup <= 1 ? 'animate-ray-width' : ''}`}
+                  style={{
+                    width: `${width}px`,
+                    height: '300vh',
+                    background: `linear-gradient(to bottom, 
+                      rgba(218,165,32,${baseOpacity}) 0%, 
+                      rgba(218,165,32,${baseOpacity * 0.8}) 15%, 
+                      rgba(218,165,32,${baseOpacity * 0.6}) 30%, 
+                      rgba(218,165,32,${baseOpacity * 0.4}) 50%, 
+                      rgba(218,165,32,${baseOpacity * 0.2}) 70%, 
+                      transparent 100%)`,
+                    transform: `rotate(${i * (360/48)}deg) translateX(-50%)`,
+                    transformOrigin: '50% 0',
+                    opacity: rayGroup === 0 ? 1 : rayGroup === 1 ? 0.8 : rayGroup === 2 ? 0.6 : 0.4,
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -225,19 +262,25 @@ export default function DashboardPage(): JSX.Element | null {
                   y: [0, -10, 0],
                 }}
                 transition={{
-                  duration: 6,
+                  duration: 8,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
                 className="relative w-96 h-96"
               >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.3)_0%,transparent_70%)]" />
+                {/* Cross Glow */}
+                <div 
+                  className="absolute inset-0 animate-pulse-opacity"
+                  style={{
+                    background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.5) 0%, rgba(218,165,32,0.3) 30%, rgba(218,165,32,0.1) 60%, transparent 80%)',
+                  }}
+                />
                 <Image
                   src="/images/cross.png"
                   layout="fill"
                   objectFit="contain"
                   alt="Sacred Cross"
-                  className="filter drop-shadow-[0_0_40px_rgba(218,165,32,0.5)]"
+                  className="filter drop-shadow-[0_0_60px_rgba(218,165,32,0.7)]"
                 />
               </motion.div>
             </div>
@@ -279,8 +322,28 @@ export default function DashboardPage(): JSX.Element | null {
           }
         }
 
+        @keyframes pulse-opacity {
+          0% { opacity: 0.3; }
+          50% { opacity: 0.8; }
+          100% { opacity: 0.3; }
+        }
+
+        @keyframes ray-width {
+          0% { transform: scaleX(0.8); }
+          50% { transform: scaleX(1.2); }
+          100% { transform: scaleX(0.8); }
+        }
+
         .animate-spin-slow {
-          animation: spin-slow 60s linear infinite;
+          animation: spin-slow 180s linear infinite;
+        }
+
+        .animate-pulse-opacity {
+          animation: pulse-opacity 12s ease-in-out infinite;
+        }
+
+        .animate-ray-width {
+          animation: ray-width 15s ease-in-out infinite;
         }
 
         body {
