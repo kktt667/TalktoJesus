@@ -72,31 +72,36 @@ const NavigationButton: React.FC<{
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className="w-full bg-white/90 rounded-lg shadow-md p-6
-               backdrop-blur-sm border border-gray-100
-               transition-all duration-300 hover:shadow-lg"
+    className="w-full bg-black/5 rounded-lg p-6
+               backdrop-blur-sm border border-gold/30
+               transition-all duration-300 hover:shadow-[0_0_15px_rgba(218,165,32,0.3)]
+               relative overflow-hidden group"
   >
-    <div className="flex items-center space-x-4">
-      <span className="text-3xl">{item.icon}</span>
-      <div>
-        <h3 className="font-cinzel text-gray-800 text-lg mb-1">
+    <div className="absolute inset-0 bg-gradient-to-b from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    
+    <div className="relative z-10">
+      <div className="flex flex-col items-center text-center space-y-4">
+        <span className="text-4xl mb-2">{item.icon}</span>
+        <h3 className="font-cinzel text-gold text-xl font-semibold tracking-wider">
           {item.title}
         </h3>
-        <p className="font-cormorant text-gray-600 text-sm">
+        <p className="font-cormorant text-gray-200/90 text-sm">
           {item.description}
         </p>
       </div>
-    </div>
-    <div className="mt-4 pt-4 border-t border-gray-100">
-      <p className="font-cormorant italic text-gray-600 text-sm">
-        "{item.verse.text}"
-      </p>
-      <p className="font-cinzel text-gray-500 text-xs mt-1">
-        {item.verse.reference}
-      </p>
+      
+      <div className="mt-6 pt-4 border-t border-gold/20">
+        <p className="font-cormorant italic text-gray-300/90 text-sm">
+          "{item.verse.text}"
+        </p>
+        <p className="font-cinzel text-gold/80 text-xs mt-2">
+          {item.verse.reference}
+        </p>
+      </div>
     </div>
   </motion.button>
 );
+
 export default function DashboardPage(): JSX.Element | null {
   const router = useRouter();
   const { ready, authenticated, logout } = usePrivy();
@@ -129,68 +134,72 @@ export default function DashboardPage(): JSX.Element | null {
         />
       </Head>
 
-      <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100">
-        {/* Background Image */}
-        <div className="fixed inset-0">
-          <Image
-            src="/images/background.jpg"
-            layout="fill"
-            objectFit="cover"
-            quality={100}
-            alt="Background"
-            className="opacity-30"
-          />
-        </div>
+      <main className="min-h-screen bg-[#0a0a0f]">
+        {/* Background Overlay */}
+        <div className="fixed inset-0 bg-gradient-to-b from-black via-[#0a0a0f] to-black opacity-90" />
 
         {/* Content Container */}
         <div className="relative z-10 container mx-auto px-4 py-8">
           {/* Header */}
-          <div className="flex justify-end mb-12">
+          <div className="flex justify-end mb-8">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => void logout()}
-              className="px-6 py-2 bg-white/80 rounded-full shadow-md 
-                       text-gray-700 font-cinzel hover:shadow-lg
-                       transition-all duration-300"
+              className="px-6 py-2 bg-black/40 rounded-full
+                       text-gold/80 font-cinzel hover:text-gold
+                       transition-all duration-300 border border-gold/30
+                       hover:border-gold/50 hover:shadow-[0_0_15px_rgba(218,165,32,0.2)]"
             >
               Depart in Peace
             </motion.button>
           </div>
 
-          {/* Central Cross */}
-          <div className="flex justify-center mb-16">
-            <motion.div
-              animate={{
-                y: [0, -10, 0],
-                rotate: [0, 2, -2, 0]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="relative w-64 h-64"
-            >
-              <Image
-                src="/images/cross.jpg"
-                layout="fill"
-                objectFit="contain"
-                alt="Sacred Cross"
-                className="rounded-lg shadow-xl"
-              />
-            </motion.div>
-          </div>
+          <div className="flex flex-col md:flex-row justify-center items-center gap-8 max-w-7xl mx-auto">
+            {/* Left Column */}
+            <div className="grid grid-cols-1 gap-6 md:w-1/3">
+              {navigationItems.slice(0, 2).map((item) => (
+                <NavigationButton
+                  key={item.id}
+                  item={item}
+                  onClick={() => handleNavigation(item.route, item.id)}
+                />
+              ))}
+            </div>
 
-          {/* Navigation Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {navigationItems.map((item) => (
-              <NavigationButton
-                key={item.id}
-                item={item}
-                onClick={() => handleNavigation(item.route, item.id)}
-              />
-            ))}
+            {/* Central Cross */}
+            <div className="md:w-1/3 flex justify-center">
+              <motion.div
+                animate={{
+                  y: [0, -10, 0],
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="relative w-96 h-96"
+              >
+                <Image
+                  src="/images/cross.png"
+                  layout="fill"
+                  objectFit="contain"
+                  alt="Sacred Cross"
+                  className="filter drop-shadow-[0_0_15px_rgba(218,165,32,0.3)]"
+                />
+              </motion.div>
+            </div>
+
+            {/* Right Column */}
+            <div className="grid grid-cols-1 gap-6 md:w-1/3">
+              {navigationItems.slice(2, 4).map((item) => (
+                <NavigationButton
+                  key={item.id}
+                  item={item}
+                  onClick={() => handleNavigation(item.route, item.id)}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
@@ -201,7 +210,7 @@ export default function DashboardPage(): JSX.Element | null {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-white"
+              className="fixed inset-0 z-50 bg-black"
               transition={{ duration: 0.7 }}
             />
           )}
@@ -213,7 +222,7 @@ export default function DashboardPage(): JSX.Element | null {
           margin: 0;
           padding: 0;
           overflow-x: hidden;
-          background: #ffffff;
+          background: #0a0a0f;
         }
 
         .font-cinzel {
@@ -222,6 +231,18 @@ export default function DashboardPage(): JSX.Element | null {
 
         .font-cormorant {
           font-family: 'Cormorant Garamond', serif;
+        }
+
+        :root {
+          --color-gold: #DAA520;
+        }
+
+        .text-gold {
+          color: var(--color-gold);
+        }
+
+        .border-gold {
+          border-color: var(--color-gold);
         }
       `}</style>
     </>
