@@ -173,8 +173,9 @@ export default function DashboardPage(): JSX.Element | null {
         {/* Light Rays */}
         <div className="fixed inset-0 z-[1]">
           {/* Central Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]
-                        bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.3)_0%,transparent_70%)]" />
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.3)_0%,transparent_70%)]"
+          />
           
           {/* Animated Light Rays */}
           <div className="absolute inset-0 origin-center animate-spin-slow">
@@ -199,10 +200,7 @@ export default function DashboardPage(): JSX.Element | null {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => void logout()}
-              className="px-6 py-2 bg-black/40 rounded-full
-                       text-white font-cinzel hover:text-gold
-                       transition-all duration-300 border border-gold/30
-                       hover:border-gold/50 hover:shadow-[0_0_15px_rgba(218,165,32,0.2)]"
+              className="px-6 py-2 bg-black/40 rounded-full text-white font-cinzel hover:text-gold transition-all duration-300 border border-gold/30 hover:border-gold/50 hover:shadow-[0_0_15px_rgba(218,165,32,0.2)]"
             >
               Depart in Peace
             </motion.button>
