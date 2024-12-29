@@ -72,14 +72,14 @@ const NavigationButton: React.FC<{
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className="w-full bg-black/60 rounded-lg p-8
+    className="w-full bg-black/40 rounded-lg p-8
                backdrop-blur-sm border border-gold/30
                transition-all duration-300 
                hover:shadow-[0_0_25px_rgba(218,165,32,0.3)]
                relative overflow-hidden group"
     style={{
       backgroundImage: `
-        linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.4)),
+        linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.2)),
         radial-gradient(circle at 50% 0%, rgba(218,165,32,0.15) 0%, transparent 50%),
         radial-gradient(circle at 50% 100%, rgba(218,165,32,0.1) 0%, transparent 50%)
       `
@@ -101,10 +101,10 @@ const NavigationButton: React.FC<{
     <div className="relative z-10">
       <div className="flex flex-col items-center text-center space-y-4">
         <span className="text-4xl mb-2 transform transition-transform duration-300 group-hover:scale-110 opacity-90">{item.icon}</span>
-        <h3 className="font-cinzel text-gold text-xl font-semibold tracking-wider">
+        <h3 className="font-cinzel text-white text-xl font-semibold tracking-wider group-hover:text-gold transition-colors duration-300">
           {item.title}
         </h3>
-        <p className="font-cormorant text-gold/80 text-sm">
+        <p className="font-cormorant text-white/90 text-sm">
           {item.description}
         </p>
       </div>
@@ -114,10 +114,10 @@ const NavigationButton: React.FC<{
         <div className="absolute -top-px left-1/2 -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
         <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 border border-gold/30 bg-black/60" />
         
-        <p className="font-cormorant italic text-gold/90 text-sm">
+        <p className="font-cormorant italic text-white/80 text-sm">
           "{item.verse.text}"
         </p>
-        <p className="font-cinzel text-gold/70 text-xs mt-2">
+        <p className="font-cinzel text-gold text-xs mt-2">
           {item.verse.reference}
         </p>
       </div>
@@ -168,21 +168,23 @@ export default function DashboardPage(): JSX.Element | null {
             alt="Background"
             className="opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50" />
         </div>
 
         {/* Light Rays */}
-        <div className="fixed inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.15)_0%,transparent_70%)]" />
+        <div className="fixed inset-0 z-[1]">
+          {/* Central Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]
+                        bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.3)_0%,transparent_70%)]" />
+          
           {/* Animated Light Rays */}
           <div className="absolute inset-0 origin-center animate-spin-slow">
             {[...Array(24)].map((_, i) => (
               <div
                 key={i}
-                className="absolute top-1/2 left-1/2 w-1 h-[200vh] bg-gradient-to-b from-gold/30 via-gold/10 to-transparent"
+                className="absolute top-1/2 left-1/2 w-1 h-[200vh]"
                 style={{
+                  background: `linear-gradient(to bottom, rgba(218,165,32,${i % 2 === 0 ? '0.4' : '0.2'}), transparent 80%)`,
                   transform: `rotate(${i * 15}deg) translateX(-50%)`,
-                  opacity: i % 2 === 0 ? 0.6 : 0.3,
                 }}
               />
             ))}
@@ -197,8 +199,8 @@ export default function DashboardPage(): JSX.Element | null {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => void logout()}
-              className="px-6 py-2 bg-black/60 rounded-full
-                       text-gold/90 font-cinzel hover:text-gold
+              className="px-6 py-2 bg-black/40 rounded-full
+                       text-white font-cinzel hover:text-gold
                        transition-all duration-300 border border-gold/30
                        hover:border-gold/50 hover:shadow-[0_0_15px_rgba(218,165,32,0.2)]"
             >
@@ -219,7 +221,7 @@ export default function DashboardPage(): JSX.Element | null {
             </div>
 
             {/* Central Cross */}
-            <div className="md:w-1/3 flex justify-center translate-x-4">
+            <div className="md:w-1/3 flex justify-center translate-x-4 z-20">
               <motion.div
                 animate={{
                   y: [0, -10, 0],
@@ -231,7 +233,7 @@ export default function DashboardPage(): JSX.Element | null {
                 }}
                 className="relative w-96 h-96"
               >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.2)_0%,transparent_70%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.3)_0%,transparent_70%)]" />
                 <Image
                   src="/images/cross.png"
                   layout="fill"
