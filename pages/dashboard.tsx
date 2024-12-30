@@ -81,7 +81,7 @@ const NavigationButton: React.FC<{
   >
     <motion.button
       onClick={onClick}
-      className="relative w-[280px] h-[420px] group"
+      className="relative w-[270px] h-[410px] group"
       animate={{ y: [0, -5, 0] }}
       transition={{
         y: {
@@ -329,7 +329,7 @@ export default function DashboardPage(): JSX.Element | null {
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.2) 0%, transparent 70%)'
+              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.15) 0%, transparent 70%)'
             }}
           />
           
@@ -342,21 +342,21 @@ export default function DashboardPage(): JSX.Element | null {
                   repeating-conic-gradient(
                     from 0deg at 50% 50%,
                     transparent 0deg,
-                    rgba(218,165,32,0.2) 0.5deg,
-                    transparent 6deg,
-                    rgba(218,165,32,0.2) 6.5deg,
-                    transparent 12deg
+                    rgba(218,165,32,0.1) 1deg,
+                    transparent 15deg,
+                    rgba(218,165,32,0.1) 16deg,
+                    transparent 30deg
                   ),
                   repeating-conic-gradient(
                     from 180deg at 50% 50%,
                     transparent 0deg,
-                    rgba(218,165,32,0.1) 0.5deg,
-                    transparent 6deg,
-                    rgba(218,165,32,0.1) 6.5deg,
-                    transparent 12deg
+                    rgba(218,165,32,0.05) 1deg,
+                    transparent 15deg,
+                    rgba(218,165,32,0.05) 16deg,
+                    transparent 30deg
                   )
                 `,
-                filter: 'blur(2px)',
+                filter: 'blur(3px)',
               }}
             />
           </div>
@@ -365,7 +365,7 @@ export default function DashboardPage(): JSX.Element | null {
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 py-8">
           {/* Header */}
-          <div className="flex justify-end mb-8 pr-12">
+          <div className="flex justify-end mb-8 pr-24">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -380,9 +380,9 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Main Content */}
-          <div className="flex items-center justify-center min-h-[80vh] -mt-16 px-16">
+          <div className="flex items-center justify-center min-h-[80vh] -mt-16 px-28">
             {/* Cards Row */}
-            <div className="flex justify-center items-center gap-6">
+            <div className="flex justify-center items-center gap-10">
               {navigationItems.slice(0, 2).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -401,7 +401,7 @@ export default function DashboardPage(): JSX.Element | null {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative w-[320px] h-[320px] mx-6"
+                className="relative w-[310px] h-[310px] mx-10"
               >
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
@@ -442,7 +442,7 @@ export default function DashboardPage(): JSX.Element | null {
         }
 
         .animate-spin-very-slow {
-          animation: spin-very-slow 240s linear infinite;
+          animation: spin-very-slow 360s linear infinite;
         }
 
         body {
