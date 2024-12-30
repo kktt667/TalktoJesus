@@ -81,7 +81,7 @@ const NavigationButton: React.FC<{
   >
     <motion.button
       onClick={onClick}
-      className="relative w-[240px] h-[360px] group"
+      className="relative w-[280px] h-[420px] group"
       animate={{ y: [0, -5, 0] }}
       transition={{
         y: {
@@ -118,29 +118,26 @@ const NavigationButton: React.FC<{
         ))}
       </div>
 
-      {/* Card Image */}
-      <div className="absolute inset-0">
-        <Image
-          src={`/images/cards/${item.id}.png`}
-          layout="fill"
-          objectFit="contain"
-          alt={item.title}
-          className="transition-transform duration-500"
-        />
+      {/* Card Image with Glow */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative w-full h-full">
+          <Image
+            src={`/images/cards/${item.id}.png`}
+            layout="fill"
+            objectFit="contain"
+            alt={item.title}
+            className="transition-transform duration-500"
+          />
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-gold/10 via-gold/5 to-transparent rounded-lg shadow-[0_0_30px_rgba(218,165,32,0.3)]" />
+        </div>
       </div>
-
-      {/* Glow Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gold/10 rounded-lg shadow-[0_0_30px_rgba(218,165,32,0.3)]" />
     </motion.button>
 
-    {/* Title and Description */}
-    <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-full text-center">
-      <h3 className="font-cinzel text-gold text-xl mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+    {/* Title */}
+    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full text-center">
+      <h3 className="font-cinzel text-gold text-xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
         {item.title}
       </h3>
-      <p className="font-cormorant text-[#8ab4f8] text-sm bg-black/40 rounded-lg px-4 py-2 backdrop-blur-sm border border-gold/20">
-        {item.description}
-      </p>
     </div>
   </motion.div>
 );
@@ -327,7 +324,7 @@ export default function DashboardPage(): JSX.Element | null {
         </div>
 
         {/* Light Rays */}
-        <div className="fixed inset-0 z-[1]">
+        <div className="fixed inset-0 z-[1] overflow-hidden">
           {/* Central Glow */}
           <div 
             className="absolute inset-0"
@@ -337,33 +334,29 @@ export default function DashboardPage(): JSX.Element | null {
           />
           
           {/* Rotating Rays */}
-          <div className="absolute inset-0 origin-center animate-spin-very-slow">
+          <div className="absolute inset-[-100%] origin-center animate-spin-very-slow">
             <div 
               className="absolute inset-0"
               style={{
                 background: `
-                  conic-gradient(
+                  repeating-conic-gradient(
                     from 0deg at 50% 50%,
-                    transparent,
+                    transparent 0deg,
+                    rgba(218,165,32,0.4) 1deg,
+                    transparent 2deg,
                     rgba(218,165,32,0.4) 3deg,
-                    transparent 6deg,
-                    rgba(218,165,32,0.4) 9deg,
-                    transparent 12deg,
-                    rgba(218,165,32,0.4) 15deg,
-                    transparent 18deg
+                    transparent 4deg
                   ),
-                  conic-gradient(
+                  repeating-conic-gradient(
                     from 180deg at 50% 50%,
-                    transparent,
+                    transparent 0deg,
+                    rgba(218,165,32,0.2) 1deg,
+                    transparent 2deg,
                     rgba(218,165,32,0.2) 3deg,
-                    transparent 6deg,
-                    rgba(218,165,32,0.2) 9deg,
-                    transparent 12deg,
-                    rgba(218,165,32,0.2) 15deg,
-                    transparent 18deg
+                    transparent 4deg
                   )
                 `,
-                filter: 'blur(4px)',
+                filter: 'blur(3px)',
               }}
             />
           </div>
@@ -372,7 +365,7 @@ export default function DashboardPage(): JSX.Element | null {
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 py-8">
           {/* Header */}
-          <div className="flex justify-end mb-8">
+          <div className="flex justify-end mb-8 pr-8">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -389,7 +382,7 @@ export default function DashboardPage(): JSX.Element | null {
           {/* Main Content */}
           <div className="flex items-center justify-center min-h-[80vh] -mt-16">
             {/* Cards Row */}
-            <div className="flex justify-center items-center gap-12">
+            <div className="flex justify-center items-center gap-8">
               {navigationItems.slice(0, 2).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -408,7 +401,7 @@ export default function DashboardPage(): JSX.Element | null {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative w-[360px] h-[360px] mx-12"
+                className="relative w-[320px] h-[320px] mx-8"
               >
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
