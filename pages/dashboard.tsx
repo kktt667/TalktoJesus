@@ -118,7 +118,7 @@ const NavigationButton: React.FC<{
         ))}
       </div>
 
-      {/* Card Image with Glow */}
+      {/* Card Image */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative w-full h-full">
           <Image
@@ -128,7 +128,6 @@ const NavigationButton: React.FC<{
             alt={item.title}
             className="transition-transform duration-500"
           />
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-gold/10 via-gold/5 to-transparent rounded-lg shadow-[0_0_30px_rgba(218,165,32,0.3)]" />
         </div>
       </div>
     </motion.button>
@@ -320,7 +319,7 @@ export default function DashboardPage(): JSX.Element | null {
             alt="Background"
             className="opacity-40"
           />
-          <div className="absolute inset-0 bg-[#0a1a3f]/60" />
+          <div className="absolute inset-0 bg-[#1e1d2a]/70" />
         </div>
 
         {/* Light Rays */}
@@ -329,12 +328,12 @@ export default function DashboardPage(): JSX.Element | null {
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.15) 0%, transparent 70%)'
+              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.1) 0%, transparent 70%)'
             }}
           />
           
           {/* Rotating Rays */}
-          <div className="absolute inset-[-100%] origin-center animate-spin-very-slow">
+          <div className="absolute inset-[-50%] origin-center animate-spin-very-slow">
             <div 
               className="absolute inset-0"
               style={{
@@ -342,21 +341,17 @@ export default function DashboardPage(): JSX.Element | null {
                   repeating-conic-gradient(
                     from 0deg at 50% 50%,
                     transparent 0deg,
-                    rgba(218,165,32,0.1) 1deg,
-                    transparent 15deg,
-                    rgba(218,165,32,0.1) 16deg,
-                    transparent 30deg
+                    rgba(218,165,32,0.08) 1deg,
+                    transparent 45deg
                   ),
                   repeating-conic-gradient(
-                    from 180deg at 50% 50%,
+                    from 22.5deg at 50% 50%,
                     transparent 0deg,
-                    rgba(218,165,32,0.05) 1deg,
-                    transparent 15deg,
-                    rgba(218,165,32,0.05) 16deg,
-                    transparent 30deg
+                    rgba(218,165,32,0.04) 1deg,
+                    transparent 45deg
                   )
                 `,
-                filter: 'blur(3px)',
+                filter: 'blur(1px)',
               }}
             />
           </div>
@@ -365,7 +360,7 @@ export default function DashboardPage(): JSX.Element | null {
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 py-8">
           {/* Header */}
-          <div className="flex justify-end mb-8 pr-24">
+          <div className="fixed top-8 right-8 z-50">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -380,9 +375,9 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Main Content */}
-          <div className="flex items-center justify-center min-h-[80vh] -mt-16 px-28">
+          <div className="flex items-center justify-center min-h-[80vh] -mt-16">
             {/* Cards Row */}
-            <div className="flex justify-center items-center gap-10">
+            <div className="flex justify-center items-center gap-6">
               {navigationItems.slice(0, 2).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -401,7 +396,7 @@ export default function DashboardPage(): JSX.Element | null {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative w-[310px] h-[310px] mx-10"
+                className="relative w-[310px] h-[310px] mx-8"
               >
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
@@ -442,7 +437,7 @@ export default function DashboardPage(): JSX.Element | null {
         }
 
         .animate-spin-very-slow {
-          animation: spin-very-slow 360s linear infinite;
+          animation: spin-very-slow 480s linear infinite;
         }
 
         body {
