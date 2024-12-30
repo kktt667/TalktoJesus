@@ -29,26 +29,26 @@ const navigationItems: NavigationItem[] = [
     title: "Divine Prayer",
     route: "/prayer-generator",
     icon: "🙏",
-    description: "Enter into Sacred Communion",
+    description: "Receive Sacred Guidance",
     verse: {
       text: "Ask and it will be given to you",
       reference: "Matthew 7:7"
     }
   },
   {
-    id: "wisdom",
-    title: "Sacred Wisdom",
+    id: "parable",
+    title: "Sacred Parables",
     route: "/parable-generator",
     icon: "📖",
-    description: "Discover Eternal Truths",
+    description: "Discover Timeless Wisdom",
     verse: {
       text: "Your word is a lamp for my feet",
       reference: "Psalm 119:105"
     }
   },
   {
-    id: "guidance",
-    title: "Holy Guidance",
+    id: "wwjd",
+    title: "What Would Jesus Do?",
     route: "/wwjd-generator",
     icon: "✝️",
     description: "Walk in Divine Light",
@@ -58,9 +58,9 @@ const navigationItems: NavigationItem[] = [
     }
   },
   {
-    id: "acts",
-    title: "Acts of Grace",
-    route: "/acts-generator",
+    id: "kindness",
+    title: "Acts of Kindness",
+    route: "/kindness-generator",
     icon: "🕊️",
     description: "Share His Boundless Love",
     verse: {
@@ -78,55 +78,16 @@ const NavigationButton: React.FC<{
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className="w-full bg-black/40 rounded-lg p-8
-               backdrop-blur-sm border border-gold/30
-               transition-all duration-300 
-               hover:shadow-[0_0_25px_rgba(218,165,32,0.3)]
-               relative overflow-hidden group"
-    style={{
-      backgroundImage: `
-        linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.2)),
-        radial-gradient(circle at 50% 0%, rgba(218,165,32,0.15) 0%, transparent 50%),
-        radial-gradient(circle at 50% 100%, rgba(218,165,32,0.1) 0%, transparent 50%)
-      `
-    }}
+    className="relative w-[280px] h-[400px] group"
   >
-    {/* Ornate Corner Decorations */}
-    <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-gold/40 rounded-tl-lg" />
-    <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-gold/40 rounded-tr-lg" />
-    <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-gold/40 rounded-bl-lg" />
-    <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-gold/40 rounded-br-lg" />
-    
-    {/* Decorative Lines */}
-    <div className="absolute top-8 left-8 right-8 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-    <div className="absolute bottom-8 left-8 right-8 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-    
-    {/* Hover Overlay */}
-    <div className="absolute inset-0 bg-gradient-to-b from-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-    
-    <div className="relative z-10">
-      <div className="flex flex-col items-center text-center space-y-4">
-        <span className="text-4xl mb-2 transform transition-transform duration-300 group-hover:scale-110 opacity-90">{item.icon}</span>
-        <h3 className="font-cinzel text-white text-xl font-semibold tracking-wider group-hover:text-gold transition-colors duration-300">
-          {item.title}
-        </h3>
-        <p className="font-cormorant text-white/90 text-sm">
-          {item.description}
-        </p>
-      </div>
-      
-      <div className="mt-6 pt-4 border-t border-gold/20 relative">
-        {/* Ornate Divider */}
-        <div className="absolute -top-px left-1/2 -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
-        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 border border-gold/30 bg-black/60" />
-        
-        <p className="font-cormorant italic text-white/80 text-sm">
-          "{item.verse.text}"
-        </p>
-        <p className="font-cinzel text-gold text-xs mt-2">
-          {item.verse.reference}
-        </p>
-      </div>
+    <div className="absolute inset-0">
+      <Image
+        src={`/images/cards/${item.id}.png`}
+        layout="fill"
+        objectFit="contain"
+        alt={item.title}
+        className="transition-transform duration-500 group-hover:scale-105"
+      />
     </div>
   </motion.button>
 );
@@ -182,69 +143,104 @@ export default function DashboardPage(): JSX.Element | null {
 
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        className="fixed inset-x-4 bottom-4 md:inset-x-auto md:right-4 md:bottom-4 md:w-[400px] 
-                   bg-black/80 backdrop-blur-lg rounded-lg border border-gold/30 shadow-xl z-30
-                   flex flex-col h-[600px]"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="fixed inset-0 z-30 flex items-center justify-center p-4"
       >
-        {/* Chat Header */}
-        <div className="p-4 border-b border-gold/30 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <span className="text-2xl">{item.icon}</span>
-            <h3 className="font-cinzel text-gold text-lg">{item.title}</h3>
-          </div>
-          <button 
-            onClick={handleChatClose}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            ×
-          </button>
-        </div>
+        {/* Backdrop */}
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={handleChatClose} />
 
-        {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages[chatId]?.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={`max-w-[80%] p-3 rounded-lg ${
-                msg.role === 'user' 
-                  ? 'bg-gold/20 text-white ml-auto' 
-                  : 'bg-white/10 text-white'
-              }`}>
-                <p className="font-cormorant">{msg.content}</p>
-                <p className="text-xs text-white/60 mt-1">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </p>
+        {/* Chat Window */}
+        <motion.div 
+          className="relative w-full max-w-4xl h-[80vh] bg-[#0a0a1a]/90 rounded-lg border border-gold/30
+                     shadow-[0_0_50px_rgba(218,165,32,0.15)] backdrop-blur-lg
+                     flex flex-col overflow-hidden"
+        >
+          {/* Header */}
+          <div className="p-6 border-b border-gold/30 bg-black/40">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <span className="text-3xl">{item.icon}</span>
+                <div>
+                  <h3 className="font-cinzel text-gold text-xl tracking-wider">{item.title}</h3>
+                  <p className="font-cormorant text-white/70 text-sm">{item.description}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="h-2 w-2 bg-gold/50 rounded-full animate-pulse" />
+                <button 
+                  onClick={handleChatClose}
+                  className="text-white/60 hover:text-white transition-colors text-2xl"
+                >
+                  ×
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Chat Input */}
-        <div className="p-4 border-t border-gold/30">
-          <div className="flex space-x-2">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatId)}
-              placeholder={`Ask for ${item.description.toLowerCase()}...`}
-              className="flex-1 bg-black/40 border border-gold/30 rounded-full px-4 py-2
-                         text-white placeholder-white/50 focus:outline-none focus:border-gold/50"
-            />
-            <button
-              onClick={() => handleSendMessage(chatId)}
-              className="bg-gold/20 hover:bg-gold/30 text-white rounded-full p-2
-                         transition-colors duration-200"
-            >
-              →
-            </button>
+            <div className="mt-4 flex items-center justify-center">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+              <p className="font-cinzel text-gold/70 text-xs mx-4 italic">"{item.verse.text}"</p>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+            </div>
           </div>
-        </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {messages[chatId]?.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`max-w-[70%] ${
+                  msg.role === 'user' 
+                    ? 'bg-gold/10 border-gold/30' 
+                    : 'bg-white/5 border-white/20'
+                } border rounded-lg p-4 backdrop-blur-sm`}>
+                  <p className="font-cormorant text-white/90">{msg.content}</p>
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-xs text-white/40">
+                      {new Date(msg.timestamp).toLocaleTimeString()}
+                    </p>
+                    {msg.role === 'assistant' && (
+                      <div className="flex items-center space-x-1">
+                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse" />
+                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse delay-100" />
+                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse delay-200" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Input */}
+          <div className="p-6 bg-black/40 border-t border-gold/30">
+            <div className="flex space-x-4">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatId)}
+                  placeholder={`Ask for ${item.description.toLowerCase()}...`}
+                  className="w-full bg-black/40 border border-gold/30 rounded-lg px-4 py-3
+                            text-white placeholder-white/30 focus:outline-none focus:border-gold/50
+                            transition-colors duration-200"
+                />
+                <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+              </div>
+              <button
+                onClick={() => handleSendMessage(chatId)}
+                className="bg-gold/20 hover:bg-gold/30 text-white rounded-lg px-6
+                          transition-colors duration-200 border border-gold/30
+                          flex items-center justify-center group"
+              >
+                <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+              </button>
+            </div>
+          </div>
+        </motion.div>
       </motion.div>
     );
   };
@@ -278,94 +274,49 @@ export default function DashboardPage(): JSX.Element | null {
 
         {/* Light Rays */}
         <div className="fixed inset-0 z-[1]">
-          {/* Natural Sunburst Effect */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(218,165,32,0.3)_0%,transparent_70%)]" />
+          {/* Central Glow */}
           <div 
-            className="absolute inset-0 animate-pulse-opacity"
+            className="absolute inset-0"
             style={{
-              background: `
-                conic-gradient(
-                  from 0deg at 50% 50%,
-                  transparent 0deg,
-                  rgba(218,165,32,0.15) 5deg,
-                  transparent 10deg,
-                  rgba(218,165,32,0.15) 15deg,
-                  transparent 20deg,
-                  rgba(218,165,32,0.15) 25deg,
-                  transparent 30deg,
-                  rgba(218,165,32,0.15) 35deg,
-                  transparent 40deg,
-                  rgba(218,165,32,0.15) 45deg,
-                  transparent 50deg,
-                  rgba(218,165,32,0.15) 55deg,
-                  transparent 60deg,
-                  rgba(218,165,32,0.15) 65deg,
-                  transparent 70deg,
-                  rgba(218,165,32,0.15) 75deg,
-                  transparent 80deg,
-                  rgba(218,165,32,0.15) 85deg,
-                  transparent 90deg,
-                  rgba(218,165,32,0.15) 95deg,
-                  transparent 100deg,
-                  rgba(218,165,32,0.15) 105deg,
-                  transparent 110deg,
-                  rgba(218,165,32,0.15) 115deg,
-                  transparent 120deg,
-                  rgba(218,165,32,0.15) 125deg,
-                  transparent 130deg,
-                  rgba(218,165,32,0.15) 135deg,
-                  transparent 140deg,
-                  rgba(218,165,32,0.15) 145deg,
-                  transparent 150deg,
-                  rgba(218,165,32,0.15) 155deg,
-                  transparent 160deg,
-                  rgba(218,165,32,0.15) 165deg,
-                  transparent 170deg,
-                  rgba(218,165,32,0.15) 175deg,
-                  transparent 180deg,
-                  rgba(218,165,32,0.15) 185deg,
-                  transparent 190deg,
-                  rgba(218,165,32,0.15) 195deg,
-                  transparent 200deg,
-                  rgba(218,165,32,0.15) 205deg,
-                  transparent 210deg,
-                  rgba(218,165,32,0.15) 215deg,
-                  transparent 220deg,
-                  rgba(218,165,32,0.15) 225deg,
-                  transparent 230deg,
-                  rgba(218,165,32,0.15) 235deg,
-                  transparent 240deg,
-                  rgba(218,165,32,0.15) 245deg,
-                  transparent 250deg,
-                  rgba(218,165,32,0.15) 255deg,
-                  transparent 260deg,
-                  rgba(218,165,32,0.15) 265deg,
-                  transparent 270deg,
-                  rgba(218,165,32,0.15) 275deg,
-                  transparent 280deg,
-                  rgba(218,165,32,0.15) 285deg,
-                  transparent 290deg,
-                  rgba(218,165,32,0.15) 295deg,
-                  transparent 300deg,
-                  rgba(218,165,32,0.15) 305deg,
-                  transparent 310deg,
-                  rgba(218,165,32,0.15) 315deg,
-                  transparent 320deg,
-                  rgba(218,165,32,0.15) 325deg,
-                  transparent 330deg,
-                  rgba(218,165,32,0.15) 335deg,
-                  transparent 340deg,
-                  rgba(218,165,32,0.15) 345deg,
-                  transparent 350deg,
-                  rgba(218,165,32,0.15) 355deg,
-                  transparent 360deg
-                )
-              `
+              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.2) 0%, transparent 70%)'
             }}
           />
+          
+          {/* Rotating Rays */}
+          <div className="absolute inset-0 origin-center animate-spin-very-slow">
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `
+                  conic-gradient(
+                    from 0deg at 50% 50%,
+                    transparent 0deg,
+                    rgba(218,165,32,0.15) 1deg,
+                    transparent 4deg,
+                    rgba(218,165,32,0.15) 5deg,
+                    transparent 8deg,
+                    rgba(218,165,32,0.15) 9deg,
+                    transparent 12deg,
+                    rgba(218,165,32,0.15) 13deg,
+                    transparent 16deg,
+                    rgba(218,165,32,0.15) 17deg,
+                    transparent 20deg,
+                    rgba(218,165,32,0.15) 21deg,
+                    transparent 24deg
+                  )
+                  repeating-conic-gradient(
+                    from 0deg at 50% 50%,
+                    transparent 0deg,
+                    rgba(218,165,32,0.1) 20deg,
+                    transparent 40deg
+                  )
+                `
+              }}
+            />
+          </div>
         </div>
 
-        {/* Content Container */}
+        {/* Content */}
         <div className="relative z-10 container mx-auto px-4 py-8">
           {/* Header */}
           <div className="flex justify-end mb-8">
@@ -373,15 +324,19 @@ export default function DashboardPage(): JSX.Element | null {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => void logout()}
-              className="px-6 py-2 bg-black/40 rounded-full text-white font-cinzel hover:text-gold transition-all duration-300 border border-gold/30 hover:border-gold/50 hover:shadow-[0_0_15px_rgba(218,165,32,0.2)]"
+              className="px-6 py-2 bg-black/40 rounded-full
+                       text-white font-cinzel hover:text-gold
+                       transition-all duration-300 border border-gold/30
+                       hover:border-gold/50 hover:shadow-[0_0_15px_rgba(218,165,32,0.2)]"
             >
               Depart in Peace
             </motion.button>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-center items-center gap-8 max-w-7xl mx-auto">
-            {/* Left Column */}
-            <div className="grid grid-cols-1 gap-8 md:w-1/3">
+          {/* Main Content */}
+          <div className="flex justify-center items-center gap-16 mt-16">
+            {/* Left Cards */}
+            <div className="flex flex-col gap-8">
               {navigationItems.slice(0, 2).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -392,7 +347,7 @@ export default function DashboardPage(): JSX.Element | null {
             </div>
 
             {/* Central Cross */}
-            <div className="md:w-1/3 flex justify-center translate-x-4 z-20">
+            <div className="flex justify-center z-20">
               <motion.div
                 animate={{
                   y: [0, -10, 0],
@@ -402,7 +357,7 @@ export default function DashboardPage(): JSX.Element | null {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative w-96 h-96"
+                className="relative w-[400px] h-[400px]"
               >
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
@@ -420,8 +375,8 @@ export default function DashboardPage(): JSX.Element | null {
               </motion.div>
             </div>
 
-            {/* Right Column */}
-            <div className="grid grid-cols-1 gap-8 md:w-1/3">
+            {/* Right Cards */}
+            <div className="flex flex-col gap-8">
               {navigationItems.slice(2, 4).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -440,10 +395,23 @@ export default function DashboardPage(): JSX.Element | null {
       </main>
 
       <style jsx global>{`
+        @keyframes spin-very-slow {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
         @keyframes pulse-opacity {
           0% { opacity: 0.4; }
           50% { opacity: 0.8; }
           100% { opacity: 0.4; }
+        }
+
+        .animate-spin-very-slow {
+          animation: spin-very-slow 120s linear infinite;
         }
 
         .animate-pulse-opacity {
