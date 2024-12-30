@@ -74,22 +74,60 @@ const NavigationButton: React.FC<{
   item: NavigationItem;
   onClick: () => void;
 }> = ({ item, onClick }) => (
-  <motion.button
-    whileHover={{ scale: 1.02 }}
+  <motion.div
+    whileHover={{ scale: 1.05, y: -5 }}
     whileTap={{ scale: 0.98 }}
-    onClick={onClick}
-    className="relative w-[280px] h-[400px] group"
+    className="relative group"
   >
-    <div className="absolute inset-0">
-      <Image
-        src={`/images/cards/${item.id}.png`}
-        layout="fill"
-        objectFit="contain"
-        alt={item.title}
-        className="transition-transform duration-500 group-hover:scale-105"
-      />
+    <motion.button
+      onClick={onClick}
+      className="relative w-[200px] h-[300px] group"
+      animate={{ y: [0, -5, 0] }}
+      transition={{
+        y: {
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }
+      }}
+    >
+      {/* Glitter Effect */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-0.5 h-0.5 bg-gold/60 rounded-full animate-twinkle"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Card Image */}
+      <div className="absolute inset-0">
+        <Image
+          src={`/images/cards/${item.id}.png`}
+          layout="fill"
+          objectFit="contain"
+          alt={item.title}
+          className="transition-transform duration-500"
+        />
+      </div>
+
+      {/* Glow Effect */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gold/10 rounded-lg" />
+    </motion.button>
+
+    {/* Description Tooltip */}
+    <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 w-full">
+      <div className="bg-black/80 backdrop-blur-sm rounded-lg p-2 border border-gold/30 shadow-lg">
+        <p className="text-gold/90 text-center text-sm font-cinzel whitespace-nowrap">{item.description}</p>
+      </div>
     </div>
-  </motion.button>
+  </motion.div>
 );
 
 export default function DashboardPage(): JSX.Element | null {
@@ -260,7 +298,7 @@ export default function DashboardPage(): JSX.Element | null {
       </Head>
 
       <main className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
-        {/* Background Image */}
+        {/* Background Image with Overlay */}
         <div className="fixed inset-0">
           <Image
             src="/images/background.jpg"
@@ -270,49 +308,55 @@ export default function DashboardPage(): JSX.Element | null {
             alt="Background"
             className="opacity-40"
           />
+          <div className="absolute inset-0 bg-[#0a1a3f]/50" />
         </div>
 
         {/* Light Rays */}
         <div className="fixed inset-0 z-[1]">
-          {/* Central Glow */}
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.2) 0%, transparent 70%)'
-            }}
-          />
-          
-          {/* Rotating Rays */}
           <div className="absolute inset-0 origin-center animate-spin-very-slow">
-            <div 
-              className="absolute inset-0"
-              style={{
-                background: `
-                  conic-gradient(
-                    from 0deg at 50% 50%,
-                    transparent 0deg,
-                    rgba(218,165,32,0.15) 1deg,
-                    transparent 4deg,
-                    rgba(218,165,32,0.15) 5deg,
-                    transparent 8deg,
-                    rgba(218,165,32,0.15) 9deg,
-                    transparent 12deg,
-                    rgba(218,165,32,0.15) 13deg,
-                    transparent 16deg,
-                    rgba(218,165,32,0.15) 17deg,
-                    transparent 20deg,
-                    rgba(218,165,32,0.15) 21deg,
-                    transparent 24deg
-                  )
-                  repeating-conic-gradient(
-                    from 0deg at 50% 50%,
-                    transparent 0deg,
-                    rgba(218,165,32,0.1) 20deg,
-                    transparent 40deg
-                  )
-                `
-              }}
-            />
+            {[...Array(48)].map((_, i) => {
+              const rayGroup = i % 4;
+              let baseOpacity, width;
+              
+              switch(rayGroup) {
+                case 0: // Primary rays
+                  baseOpacity = 0.4;
+                  width = 2;
+                  break;
+                case 1: // Secondary rays
+                  baseOpacity = 0.3;
+                  width = 1.5;
+                  break;
+                case 2: // Tertiary rays
+                  baseOpacity = 0.2;
+                  width = 1;
+                  break;
+                default: // Fine rays
+                  baseOpacity = 0.15;
+                  width = 0.5;
+              }
+              
+              return (
+                <div
+                  key={i}
+                  className={`absolute top-1/2 left-1/2 ${rayGroup === 0 ? 'animate-pulse-opacity' : ''} ${rayGroup <= 1 ? 'animate-ray-width' : ''}`}
+                  style={{
+                    width: `${width}px`,
+                    height: '300vh',
+                    background: `linear-gradient(to bottom, 
+                      rgba(218,165,32,${baseOpacity}) 0%, 
+                      rgba(218,165,32,${baseOpacity * 0.8}) 15%, 
+                      rgba(218,165,32,${baseOpacity * 0.6}) 30%, 
+                      rgba(218,165,32,${baseOpacity * 0.4}) 50%, 
+                      rgba(218,165,32,${baseOpacity * 0.2}) 70%, 
+                      transparent 100%)`,
+                    transform: `rotate(${i * (360/48)}deg) translateX(-50%)`,
+                    transformOrigin: '50% 0',
+                    opacity: rayGroup === 0 ? 1 : rayGroup === 1 ? 0.8 : rayGroup === 2 ? 0.6 : 0.4,
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -334,9 +378,9 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Main Content */}
-          <div className="flex justify-center items-center gap-16 mt-16">
-            {/* Left Cards */}
-            <div className="flex flex-col gap-8">
+          <div className="flex flex-col items-center justify-center min-h-[80vh] gap-16">
+            {/* Cards Row */}
+            <div className="flex justify-center items-center gap-16">
               {navigationItems.slice(0, 2).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -344,10 +388,8 @@ export default function DashboardPage(): JSX.Element | null {
                   onClick={() => handleChatOpen(item.id)}
                 />
               ))}
-            </div>
 
-            {/* Central Cross */}
-            <div className="flex justify-center z-20">
+              {/* Central Cross */}
               <motion.div
                 animate={{
                   y: [0, -10, 0],
@@ -357,7 +399,7 @@ export default function DashboardPage(): JSX.Element | null {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative w-[400px] h-[400px]"
+                className="relative w-[400px] h-[400px] mx-16"
               >
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
@@ -373,10 +415,7 @@ export default function DashboardPage(): JSX.Element | null {
                   className="filter drop-shadow-[0_0_60px_rgba(218,165,32,0.7)]"
                 />
               </motion.div>
-            </div>
 
-            {/* Right Cards */}
-            <div className="flex flex-col gap-8">
               {navigationItems.slice(2, 4).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -395,13 +434,14 @@ export default function DashboardPage(): JSX.Element | null {
       </main>
 
       <style jsx global>{`
+        @keyframes twinkle {
+          0%, 100% { opacity: 0; transform: scale(0.5); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+
         @keyframes spin-very-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
 
         @keyframes pulse-opacity {
@@ -410,12 +450,26 @@ export default function DashboardPage(): JSX.Element | null {
           100% { opacity: 0.4; }
         }
 
+        @keyframes ray-width {
+          0% { transform: scaleX(0.8); }
+          50% { transform: scaleX(1.2); }
+          100% { transform: scaleX(0.8); }
+        }
+
+        .animate-twinkle {
+          animation: twinkle 2s ease-in-out infinite;
+        }
+
         .animate-spin-very-slow {
           animation: spin-very-slow 120s linear infinite;
         }
 
         .animate-pulse-opacity {
           animation: pulse-opacity 12s ease-in-out infinite;
+        }
+
+        .animate-ray-width {
+          animation: ray-width 15s ease-in-out infinite;
         }
 
         body {
