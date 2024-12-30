@@ -31,3 +31,4 @@ The landing page features a background of glowing light with a gentle, divine gr
 - **Custom Prayer Generator:** Acknowledge god and tell him everything you ever wanted in the holiest way, with the help of Jesus.
 - **Audio Guidance:** Provide guided prayers, meditations, or messages.
 - **Community Building:** Implement features for users to share reflections and experiences on social media.
+
