@@ -81,7 +81,7 @@ const NavigationButton: React.FC<{
   >
     <motion.button
       onClick={onClick}
-      className="relative w-[200px] h-[300px] group"
+      className="relative w-[240px] h-[360px] group"
       animate={{ y: [0, -5, 0] }}
       transition={{
         y: {
@@ -92,15 +92,27 @@ const NavigationButton: React.FC<{
       }}
     >
       {/* Glitter Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
+      <div className="absolute inset-0 pointer-events-none z-20">
+        {[...Array(30)].map((_, i) => (
+          <motion.div
             key={i}
-            className="absolute w-0.5 h-0.5 bg-gold/60 rounded-full animate-twinkle"
+            className="absolute w-1 h-1 bg-[#ffd700] rounded-full"
+            animate={{
+              scale: [0, 1, 0],
+              opacity: [0, 1, 0],
+              x: [0, Math.random() * 40 - 20],
+              y: [0, Math.random() * 40 - 20],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+              ease: "easeInOut"
+            }}
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 2}s`,
+              filter: 'blur(0.5px)',
             }}
           />
         ))}
@@ -118,14 +130,17 @@ const NavigationButton: React.FC<{
       </div>
 
       {/* Glow Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gold/10 rounded-lg" />
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gold/10 rounded-lg shadow-[0_0_30px_rgba(218,165,32,0.3)]" />
     </motion.button>
 
-    {/* Description Tooltip */}
-    <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 w-full">
-      <div className="bg-black/80 backdrop-blur-sm rounded-lg p-2 border border-gold/30 shadow-lg">
-        <p className="text-gold/90 text-center text-sm font-cinzel whitespace-nowrap">{item.description}</p>
-      </div>
+    {/* Title and Description */}
+    <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-full text-center">
+      <h3 className="font-cinzel text-gold text-xl mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        {item.title}
+      </h3>
+      <p className="font-cormorant text-[#8ab4f8] text-sm bg-black/40 rounded-lg px-4 py-2 backdrop-blur-sm border border-gold/20">
+        {item.description}
+      </p>
     </div>
   </motion.div>
 );
@@ -308,55 +323,49 @@ export default function DashboardPage(): JSX.Element | null {
             alt="Background"
             className="opacity-40"
           />
-          <div className="absolute inset-0 bg-[#0a1a3f]/50" />
+          <div className="absolute inset-0 bg-[#0a1a3f]/60" />
         </div>
 
         {/* Light Rays */}
         <div className="fixed inset-0 z-[1]">
+          {/* Central Glow */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.3) 0%, transparent 70%)'
+            }}
+          />
+          
+          {/* Rotating Rays */}
           <div className="absolute inset-0 origin-center animate-spin-very-slow">
-            {[...Array(48)].map((_, i) => {
-              const rayGroup = i % 4;
-              let baseOpacity, width;
-              
-              switch(rayGroup) {
-                case 0: // Primary rays
-                  baseOpacity = 0.4;
-                  width = 2;
-                  break;
-                case 1: // Secondary rays
-                  baseOpacity = 0.3;
-                  width = 1.5;
-                  break;
-                case 2: // Tertiary rays
-                  baseOpacity = 0.2;
-                  width = 1;
-                  break;
-                default: // Fine rays
-                  baseOpacity = 0.15;
-                  width = 0.5;
-              }
-              
-              return (
-                <div
-                  key={i}
-                  className={`absolute top-1/2 left-1/2 ${rayGroup === 0 ? 'animate-pulse-opacity' : ''} ${rayGroup <= 1 ? 'animate-ray-width' : ''}`}
-                  style={{
-                    width: `${width}px`,
-                    height: '300vh',
-                    background: `linear-gradient(to bottom, 
-                      rgba(218,165,32,${baseOpacity}) 0%, 
-                      rgba(218,165,32,${baseOpacity * 0.8}) 15%, 
-                      rgba(218,165,32,${baseOpacity * 0.6}) 30%, 
-                      rgba(218,165,32,${baseOpacity * 0.4}) 50%, 
-                      rgba(218,165,32,${baseOpacity * 0.2}) 70%, 
-                      transparent 100%)`,
-                    transform: `rotate(${i * (360/48)}deg) translateX(-50%)`,
-                    transformOrigin: '50% 0',
-                    opacity: rayGroup === 0 ? 1 : rayGroup === 1 ? 0.8 : rayGroup === 2 ? 0.6 : 0.4,
-                  }}
-                />
-              );
-            })}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `
+                  conic-gradient(
+                    from 0deg at 50% 50%,
+                    transparent,
+                    rgba(218,165,32,0.4) 3deg,
+                    transparent 6deg,
+                    rgba(218,165,32,0.4) 9deg,
+                    transparent 12deg,
+                    rgba(218,165,32,0.4) 15deg,
+                    transparent 18deg
+                  ),
+                  conic-gradient(
+                    from 180deg at 50% 50%,
+                    transparent,
+                    rgba(218,165,32,0.2) 3deg,
+                    transparent 6deg,
+                    rgba(218,165,32,0.2) 9deg,
+                    transparent 12deg,
+                    rgba(218,165,32,0.2) 15deg,
+                    transparent 18deg
+                  )
+                `,
+                filter: 'blur(4px)',
+              }}
+            />
           </div>
         </div>
 
@@ -378,9 +387,9 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Main Content */}
-          <div className="flex flex-col items-center justify-center min-h-[80vh] gap-16">
+          <div className="flex items-center justify-center min-h-[80vh] -mt-16">
             {/* Cards Row */}
-            <div className="flex justify-center items-center gap-16">
+            <div className="flex justify-center items-center gap-12">
               {navigationItems.slice(0, 2).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -399,7 +408,7 @@ export default function DashboardPage(): JSX.Element | null {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative w-[400px] h-[400px] mx-16"
+                className="relative w-[360px] h-[360px] mx-12"
               >
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
@@ -434,42 +443,13 @@ export default function DashboardPage(): JSX.Element | null {
       </main>
 
       <style jsx global>{`
-        @keyframes twinkle {
-          0%, 100% { opacity: 0; transform: scale(0.5); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-
         @keyframes spin-very-slow {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
 
-        @keyframes pulse-opacity {
-          0% { opacity: 0.4; }
-          50% { opacity: 0.8; }
-          100% { opacity: 0.4; }
-        }
-
-        @keyframes ray-width {
-          0% { transform: scaleX(0.8); }
-          50% { transform: scaleX(1.2); }
-          100% { transform: scaleX(0.8); }
-        }
-
-        .animate-twinkle {
-          animation: twinkle 2s ease-in-out infinite;
-        }
-
         .animate-spin-very-slow {
-          animation: spin-very-slow 120s linear infinite;
-        }
-
-        .animate-pulse-opacity {
-          animation: pulse-opacity 12s ease-in-out infinite;
-        }
-
-        .animate-ray-width {
-          animation: ray-width 15s ease-in-out infinite;
+          animation: spin-very-slow 180s linear infinite;
         }
 
         body {
