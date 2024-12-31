@@ -81,7 +81,7 @@ const NavigationButton: React.FC<{
   >
     <motion.button
       onClick={onClick}
-      className="relative w-[270px] h-[410px] group"
+      className="relative w-[250px] h-[380px] group"
       animate={{ y: [0, -5, 0] }}
       transition={{
         y: {
@@ -328,7 +328,7 @@ export default function DashboardPage(): JSX.Element | null {
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.1) 0%, transparent 70%)'
+              background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.08) 0%, transparent 70%)'
             }}
           />
           
@@ -341,17 +341,29 @@ export default function DashboardPage(): JSX.Element | null {
                   repeating-conic-gradient(
                     from 0deg at 50% 50%,
                     transparent 0deg,
-                    rgba(218,165,32,0.08) 1deg,
-                    transparent 45deg
+                    rgba(255,215,0,0.06) 0.5deg,
+                    transparent 20deg,
+                    rgba(255,215,0,0.06) 20.5deg,
+                    transparent 40deg,
+                    rgba(255,215,0,0.06) 40.5deg,
+                    transparent 60deg,
+                    rgba(255,215,0,0.06) 60.5deg,
+                    transparent 80deg
                   ),
                   repeating-conic-gradient(
-                    from 22.5deg at 50% 50%,
+                    from 10deg at 50% 50%,
                     transparent 0deg,
-                    rgba(218,165,32,0.04) 1deg,
-                    transparent 45deg
+                    rgba(255,215,0,0.04) 0.5deg,
+                    transparent 20deg,
+                    rgba(255,215,0,0.04) 20.5deg,
+                    transparent 40deg,
+                    rgba(255,215,0,0.04) 40.5deg,
+                    transparent 60deg,
+                    rgba(255,215,0,0.04) 60.5deg,
+                    transparent 80deg
                   )
                 `,
-                filter: 'blur(1px)',
+                filter: 'blur(0.5px)',
               }}
             />
           </div>
@@ -375,9 +387,9 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Main Content */}
-          <div className="flex items-center justify-center min-h-[80vh] -mt-16">
+          <div className="flex items-center justify-center h-screen">
             {/* Cards Row */}
-            <div className="flex justify-center items-center gap-6">
+            <div className="flex justify-center items-center gap-4">
               {navigationItems.slice(0, 2).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -396,7 +408,7 @@ export default function DashboardPage(): JSX.Element | null {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative w-[310px] h-[310px] mx-8"
+                className="relative w-[300px] h-[300px] mx-6"
               >
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
@@ -437,7 +449,7 @@ export default function DashboardPage(): JSX.Element | null {
         }
 
         .animate-spin-very-slow {
-          animation: spin-very-slow 480s linear infinite;
+          animation: spin-very-slow 600s linear infinite;
         }
 
         body {
