@@ -198,43 +198,51 @@ export default function DashboardPage(): JSX.Element | null {
         className="fixed inset-0 z-30 flex items-center justify-center p-4"
       >
         {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={handleChatClose} />
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={handleChatClose} />
 
         {/* Chat Window */}
         <motion.div 
-          className="relative w-full max-w-4xl h-[80vh] bg-[#0a0a1a]/90 rounded-lg border border-gold/30
-                     shadow-[0_0_50px_rgba(218,165,32,0.15)] backdrop-blur-lg
-                     flex flex-col overflow-hidden"
+          className="relative w-full max-w-4xl h-[80vh] rounded-lg border border-gold/30
+                   shadow-[0_0_50px_rgba(218,165,32,0.15)] backdrop-blur-lg
+                   flex flex-col overflow-hidden"
         >
+          {/* Background Texture */}
+          <div className="absolute inset-0">
+            <Image
+              src="/images/texture.jpg"
+              layout="fill"
+              objectFit="cover"
+              alt="Scroll Texture"
+              className="opacity-20"
+            />
+          </div>
+
           {/* Header */}
-          <div className="p-6 border-b border-gold/30 bg-black/40">
+          <div className="relative p-8 border-b border-gold/30 bg-black/60">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <span className="text-3xl">{item.icon}</span>
+              <div className="flex items-center space-x-6">
+                <span className="text-4xl">{item.icon}</span>
                 <div>
-                  <h3 className="font-cinzel text-gold text-xl tracking-wider">{item.title}</h3>
-                  <p className="font-cormorant text-white/70 text-sm">{item.description}</p>
+                  <h3 className="font-cinzel text-gold text-2xl tracking-wider mb-1">{item.title}</h3>
+                  <p className="font-cormorant text-gold/70 text-lg italic">{item.description}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="h-2 w-2 bg-gold/50 rounded-full animate-pulse" />
-                <button 
-                  onClick={handleChatClose}
-                  className="text-white/60 hover:text-white transition-colors text-2xl"
-                >
-                  ×
-                </button>
-              </div>
+              <button 
+                onClick={handleChatClose}
+                className="text-gold/60 hover:text-gold transition-colors text-3xl"
+              >
+                ×
+              </button>
             </div>
-            <div className="mt-4 flex items-center justify-center">
+            <div className="mt-6 flex items-center justify-center">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-              <p className="font-cinzel text-gold/70 text-xs mx-4 italic">"{item.verse.text}"</p>
+              <p className="font-cinzel text-gold/80 text-sm mx-6 italic">"{item.verse.text}"</p>
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
             </div>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <div className="relative flex-1 overflow-y-auto p-8 space-y-6">
             {messages[chatId]?.map((msg, idx) => (
               <div
                 key={idx}
@@ -244,10 +252,10 @@ export default function DashboardPage(): JSX.Element | null {
                   msg.role === 'user' 
                     ? 'bg-gold/10 border-gold/30' 
                     : 'bg-white/5 border-white/20'
-                } border rounded-lg p-4 backdrop-blur-sm`}>
-                  <p className="font-cormorant text-white/90">{msg.content}</p>
-                  <div className="mt-2 flex items-center justify-between">
-                    <p className="text-xs text-white/40">
+                } border rounded-lg p-6 backdrop-blur-sm`}>
+                  <p className="font-cormorant text-white/90 text-lg">{msg.content}</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <p className="text-xs text-gold/50">
                       {new Date(msg.timestamp).toLocaleTimeString()}
                     </p>
                     {msg.role === 'assistant' && (
@@ -264,7 +272,7 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Input */}
-          <div className="p-6 bg-black/40 border-t border-gold/30">
+          <div className="relative p-8 bg-black/60 border-t border-gold/30">
             <div className="flex space-x-4">
               <div className="flex-1 relative">
                 <input
@@ -272,21 +280,30 @@ export default function DashboardPage(): JSX.Element | null {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatId)}
-                  placeholder={`Ask for ${item.description.toLowerCase()}...`}
-                  className="w-full bg-black/40 border border-gold/30 rounded-lg px-4 py-3
-                            text-white placeholder-white/30 focus:outline-none focus:border-gold/50
-                            transition-colors duration-200"
+                  placeholder={`Ask for divine guidance...`}
+                  className="w-full bg-black/40 border border-gold/30 rounded-lg px-6 py-4
+                            text-lg text-white placeholder-gold/30 focus:outline-none focus:border-gold/50
+                            transition-colors duration-200 font-cormorant"
                 />
                 <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleSendMessage(chatId)}
-                className="bg-gold/20 hover:bg-gold/30 text-white rounded-lg px-6
-                          transition-colors duration-200 border border-gold/30
+                className="bg-gold/10 hover:bg-gold/20 rounded-lg px-6
+                          transition-all duration-200 border border-gold/30
                           flex items-center justify-center group"
               >
-                <span className="transform group-hover:translate-x-1 transition-transform">→</span>
-              </button>
+                <Image
+                  src="/images/dove.png"
+                  width={32}
+                  height={32}
+                  alt="Send"
+                  className="filter brightness-0 invert opacity-80 group-hover:opacity-100
+                           transition-all duration-200 transform group-hover:scale-110"
+                />
+              </motion.button>
             </div>
           </div>
         </motion.div>
@@ -309,26 +326,13 @@ export default function DashboardPage(): JSX.Element | null {
       </Head>
 
       <main className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="fixed inset-0">
-          <Image
-            src="/images/background.jpg"
-            layout="fill"
-            objectFit="cover"
-            quality={100}
-            alt="Background"
-            className="opacity-40"
-          />
-          <div className="absolute inset-0 bg-[#1e1d2a]/70" />
-        </div>
-
         {/* Light Rays */}
         <div className="fixed inset-0 z-[1] overflow-hidden">
           {/* Central Glow */}
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.12) 0%, transparent 70%)'
+              background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.08) 0%, transparent 70%)'
             }}
           />
           
@@ -341,26 +345,39 @@ export default function DashboardPage(): JSX.Element | null {
                   repeating-conic-gradient(
                     from 0deg at 50% 50%,
                     transparent 0deg,
-                    rgba(255,215,0,0.2) 1deg,
-                    rgba(255,215,0,0.15) 2deg,
-                    rgba(255,215,0,0.1) 3deg,
-                    transparent 4deg,
-                    transparent 30deg
+                    rgba(255,215,0,0.12) 2deg,
+                    rgba(255,215,0,0.08) 4deg,
+                    rgba(255,215,0,0.04) 6deg,
+                    transparent 8deg,
+                    transparent 45deg
                   ),
                   repeating-conic-gradient(
-                    from 15deg at 50% 50%,
+                    from 22.5deg at 50% 50%,
                     transparent 0deg,
-                    rgba(255,215,0,0.15) 1deg,
-                    rgba(255,215,0,0.1) 2deg,
-                    rgba(255,215,0,0.05) 3deg,
-                    transparent 4deg,
-                    transparent 30deg
+                    rgba(255,215,0,0.08) 2deg,
+                    rgba(255,215,0,0.04) 4deg,
+                    rgba(255,215,0,0.02) 6deg,
+                    transparent 8deg,
+                    transparent 45deg
                   )
                 `,
-                filter: 'blur(0.5px)',
+                filter: 'blur(1px)',
               }}
             />
           </div>
+        </div>
+
+        {/* Background Image with Overlay */}
+        <div className="fixed inset-0">
+          <Image
+            src="/images/background.jpg"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+            alt="Background"
+            className="opacity-50"
+          />
+          <div className="absolute inset-0 bg-[#1e1d2a]/60" />
         </div>
 
         {/* Content */}
