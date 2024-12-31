@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
@@ -9,6 +9,7 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  isLoading?: boolean;
 }
 
 interface NavigationItem {
@@ -147,6 +148,7 @@ export default function DashboardPage(): JSX.Element | null {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
   const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -169,11 +171,11 @@ export default function DashboardPage(): JSX.Element | null {
   };
 
   const handleSendMessage = async (chatId: string) => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || isLoading) return;
 
     const newMessage: ChatMessage = {
       role: 'user',
-      content: inputMessage,
+      content: inputMessage.trim(),
       timestamp: new Date()
     };
 
@@ -182,6 +184,7 @@ export default function DashboardPage(): JSX.Element | null {
       [chatId]: [...(prev[chatId] || []), newMessage]
     }));
     setInputMessage("");
+    setIsLoading(true);
 
     try {
       const response = await fetch('/api/chat', {
@@ -213,13 +216,63 @@ export default function DashboardPage(): JSX.Element | null {
       }));
     } catch (error) {
       console.error('Error:', error);
-      // Handle error appropriately
+      // Add error message to chat
+      const errorMessage: ChatMessage = {
+        role: 'assistant',
+        content: "My child, I apologize but I am unable to respond at this moment. Please try again and I will be here to guide you.",
+        timestamp: new Date()
+      };
+      setMessages(prev => ({
+        ...prev,
+        [chatId]: [...(prev[chatId] || []), errorMessage]
+      }));
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const ChatInterface = ({ chatId }: { chatId: string }) => {
     const item = navigationItems.find(i => i.id === chatId);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [localInputMessage, setLocalInputMessage] = useState("");
+
     if (!item) return null;
+
+    const scrollToBottom = () => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+      scrollToBottom();
+    }, [messages[chatId]]);
+
+    // Handle input change with debounce
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      const value = e.target.value;
+      setLocalInputMessage(value);
+      setInputMessage(value);
+    };
+
+    // Handle form submission
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (localInputMessage.trim() && !isLoading) {
+        handleSendMessage(chatId);
+        setLocalInputMessage("");
+      }
+    };
+
+    const formatResponse = (content: string) => {
+      // Format lists
+      content = content.replace(/(\d+\.\s+\*\*[^*]+\*\*:)/g, '\n$1');
+      // Add line breaks before sections
+      content = content.replace(/(\*\*[^*]+\*\*:)/g, '\n$1');
+      // Ensure proper spacing after periods
+      content = content.replace(/\.(\S)/g, '. $1');
+      return content;
+    };
 
     return (
       <motion.div
@@ -233,7 +286,7 @@ export default function DashboardPage(): JSX.Element | null {
 
         {/* Chat Window */}
         <motion.div 
-          className="relative w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden rounded-3xl"
+          className="relative w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden rounded-3xl"
         >
           {/* Background Texture */}
           <div className="absolute inset-0 rounded-3xl">
@@ -248,16 +301,14 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Header */}
-          <div className="relative px-12 py-8">
+          <div className="relative px-12 py-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
-                <h3 className="font-cinzel text-[#4a3728] text-3xl tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] text-center w-full">
-                  {item.title}
-                </h3>
-              </div>
+              <h3 className="font-cinzel text-[#4a3728] text-3xl tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] text-center w-full">
+                {item.title}
+              </h3>
               <button 
                 onClick={handleChatClose}
-                className="text-[#4a3728]/60 hover:text-[#4a3728] transition-colors text-4xl"
+                className="text-[#4a3728]/60 hover:text-[#4a3728] transition-colors text-4xl absolute right-8"
               >
                 ×
               </button>
@@ -265,74 +316,103 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Messages */}
-          <div className="relative flex-1 overflow-y-auto px-12 py-8 space-y-8 scrollbar-thin scrollbar-thumb-[#4a3728]/20 scrollbar-track-transparent">
+          <div className="relative flex-1 overflow-y-auto px-24 py-8 space-y-12 scrollbar-thin scrollbar-thumb-[#4a3728]/20 scrollbar-track-transparent">
             {messages[chatId]?.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className="flex flex-col items-center"
               >
-                <div className={`max-w-[70%] ${
-                  msg.role === 'user' 
-                    ? 'bg-[#4a3728]/5 border-[#4a3728]/20' 
-                    : 'bg-black/5 border-[#4a3728]/10'
-                } border rounded-2xl p-6 backdrop-blur-sm relative`}>
-                  <p className="relative font-cormorant text-[#4a3728] text-xl leading-relaxed">
-                    {msg.content}
-                  </p>
-                  <div className="mt-3 flex items-center justify-between relative">
+                <div 
+                  className={`w-[85%] ${
+                    msg.role === 'user' 
+                      ? 'bg-[#4a3728]/5 border-[#4a3728]/20' 
+                      : 'bg-gradient-to-br from-[#ffd700]/10 via-[#daa520]/10 to-[#b8860b]/10 border-[#daa520]/30'
+                  } border rounded-2xl p-8 backdrop-blur-sm relative`}
+                >
+                  <div className={`absolute inset-0 ${
+                    msg.role === 'assistant' ? 'bg-gradient-to-br from-[#ffd700]/5 via-transparent to-[#daa520]/5' : ''
+                  } rounded-2xl`} />
+                  
+                  <div className="relative whitespace-pre-wrap font-cormorant text-[#4a3728] text-xl leading-relaxed text-center">
+                    {msg.role === 'assistant' ? formatResponse(msg.content) : msg.content}
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-center relative">
                     <p className="text-xs text-[#4a3728]/50 font-cinzel">
                       {new Date(msg.timestamp).toLocaleTimeString()}
                     </p>
-                    {msg.role === 'assistant' && (
-                      <div className="flex items-center space-x-1">
-                        <div className="w-1 h-1 bg-[#4a3728]/50 rounded-full animate-pulse" />
-                        <div className="w-1 h-1 bg-[#4a3728]/50 rounded-full animate-pulse delay-100" />
-                        <div className="w-1 h-1 bg-[#4a3728]/50 rounded-full animate-pulse delay-200" />
+                    {msg.role === 'assistant' && msg.isLoading && (
+                      <div className="flex items-center space-x-1 ml-3">
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ repeat: Infinity, duration: 1 }}
+                          className="w-2 h-2 bg-[#daa520] rounded-full"
+                        />
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
+                          className="w-2 h-2 bg-[#daa520] rounded-full"
+                        />
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
+                          className="w-2 h-2 bg-[#daa520] rounded-full"
+                        />
                       </div>
                     )}
                   </div>
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input Section */}
-          <div className="relative px-12 pb-12">
+          <div className="relative px-24 pb-8">
             <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage(chatId);
-              }}
-              className="flex items-center space-x-4"
+              onSubmit={handleSubmit}
+              className="flex items-center justify-center space-x-4"
             >
-              <div className="flex-1 relative">
+              <div className="w-[85%] relative">
                 <input
+                  ref={inputRef}
                   type="text"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
+                  value={localInputMessage}
+                  onChange={handleInputChange}
                   placeholder="Ask for divine guidance..."
                   className="w-full bg-[#4a3728]/5 border-2 border-[#4a3728]/30 rounded-full px-8 py-4
-                            text-xl text-[#4a3728] placeholder-[#4a3728]/40 
+                            text-xl text-[#4a3728] placeholder-[#4a3728]/40 text-center
                             focus:outline-none focus:border-[#4a3728]/50
                             transition-colors duration-200 font-cormorant"
+                  autoComplete="off"
+                  spellCheck="false"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  onFocus={(e) => {
+                    const len = e.target.value.length;
+                    e.target.setSelectionRange(len, len);
+                  }}
                 />
+                <motion.button
+                  type="submit"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={isLoading || !localInputMessage.trim()}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 
+                            bg-[#4a3728]/5 hover:bg-[#4a3728]/10 rounded-full p-4
+                            transition-all duration-200 border-2 border-[#4a3728]/30
+                            hover:border-[#4a3728]/50 flex items-center justify-center
+                            disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Image
+                    src="/images/dove_icon.png"
+                    width={28}
+                    height={28}
+                    alt="Send"
+                    className="opacity-80 group-hover:opacity-100 transition-opacity duration-200"
+                  />
+                </motion.button>
               </div>
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-[#4a3728]/5 hover:bg-[#4a3728]/10 rounded-full p-4
-                          transition-all duration-200 border-2 border-[#4a3728]/30
-                          hover:border-[#4a3728]/50 flex items-center justify-center"
-              >
-                <Image
-                  src="/images/dove_icon.png"
-                  width={28}
-                  height={28}
-                  alt="Send"
-                  className="opacity-80 group-hover:opacity-100 transition-opacity duration-200"
-                />
-              </motion.button>
             </form>
           </div>
         </motion.div>
