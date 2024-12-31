@@ -234,8 +234,6 @@ export default function DashboardPage(): JSX.Element | null {
   const ChatInterface = ({ chatId }: { chatId: string }) => {
     const item = navigationItems.find(i => i.id === chatId);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
-    const [localInputMessage, setLocalInputMessage] = useState("");
 
     if (!item) return null;
 
@@ -246,23 +244,6 @@ export default function DashboardPage(): JSX.Element | null {
     useEffect(() => {
       scrollToBottom();
     }, [messages[chatId]]);
-
-    // Handle input change with debounce
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      e.preventDefault();
-      const value = e.target.value;
-      setLocalInputMessage(value);
-      setInputMessage(value);
-    };
-
-    // Handle form submission
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      if (localInputMessage.trim() && !isLoading) {
-        handleSendMessage(chatId);
-        setLocalInputMessage("");
-      }
-    };
 
     const formatResponse = (content: string) => {
       // Format lists
@@ -369,51 +350,51 @@ export default function DashboardPage(): JSX.Element | null {
 
           {/* Input Section */}
           <div className="relative px-24 pb-8">
-            <form 
-              onSubmit={handleSubmit}
-              className="flex items-center justify-center space-x-4"
-            >
-              <div className="w-[85%] relative">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={localInputMessage}
-                  onChange={handleInputChange}
-                  placeholder="Ask for divine guidance..."
-                  className="w-full bg-[#4a3728]/5 border-2 border-[#4a3728]/30 rounded-full px-8 py-4
-                            text-xl text-[#4a3728] placeholder-[#4a3728]/40 text-center
-                            focus:outline-none focus:border-[#4a3728]/50
-                            transition-colors duration-200 font-cormorant"
-                  autoComplete="off"
-                  spellCheck="false"
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  onFocus={(e) => {
-                    const len = e.target.value.length;
-                    e.target.setSelectionRange(len, len);
-                  }}
-                />
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={isLoading || !localInputMessage.trim()}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 
-                            bg-[#4a3728]/5 hover:bg-[#4a3728]/10 rounded-full p-4
-                            transition-all duration-200 border-2 border-[#4a3728]/30
-                            hover:border-[#4a3728]/50 flex items-center justify-center
-                            disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+            <div className="w-[85%] mx-auto relative">
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (inputMessage.trim() && !isLoading) {
+                      handleSendMessage(chatId);
+                    }
+                  }
+                }}
+                placeholder="Ask for divine guidance..."
+                className="w-full bg-[#4a3728]/5 border-2 border-[#4a3728]/30 rounded-full px-8 py-4
+                          text-xl text-[#4a3728] placeholder-[#4a3728]/40 text-left
+                          focus:outline-none focus:border-[#4a3728]/50
+                          transition-colors duration-200 font-cormorant"
+              />
+              <button
+                onClick={() => {
+                  if (inputMessage.trim() && !isLoading) {
+                    handleSendMessage(chatId);
+                  }
+                }}
+                disabled={!inputMessage.trim() || isLoading}
+                className="absolute right-2 top-1/2 -translate-y-1/2 
+                          h-16 w-16 flex items-center justify-center
+                          bg-[#4a3728]/5 hover:bg-[#4a3728]/10 rounded-full
+                          transition-all duration-200 border-2 border-[#4a3728]/30
+                          hover:border-[#4a3728]/50
+                          disabled:opacity-50 disabled:cursor-not-allowed
+                          transform-none"
+              >
+                <div className="relative w-12 h-12">
                   <Image
                     src="/images/dove_icon.png"
-                    width={28}
-                    height={28}
+                    layout="fill"
+                    objectFit="contain"
                     alt="Send"
-                    className="opacity-80 group-hover:opacity-100 transition-opacity duration-200"
+                    className="opacity-80 transition-opacity duration-200"
                   />
-                </motion.button>
-              </div>
-            </form>
+                </div>
+              </button>
+            </div>
           </div>
         </motion.div>
       </motion.div>
