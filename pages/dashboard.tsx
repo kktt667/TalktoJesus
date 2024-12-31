@@ -328,12 +328,12 @@ export default function DashboardPage(): JSX.Element | null {
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.08) 0%, transparent 70%)'
+              background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.1) 0%, transparent 70%)'
             }}
           />
           
           {/* Rotating Rays */}
-          <div className="absolute inset-[-50%] origin-center animate-spin-very-slow">
+          <div className="absolute inset-[-100%] origin-center animate-spin-very-slow">
             <div 
               className="absolute inset-0"
               style={{
@@ -341,26 +341,20 @@ export default function DashboardPage(): JSX.Element | null {
                   repeating-conic-gradient(
                     from 0deg at 50% 50%,
                     transparent 0deg,
-                    rgba(255,215,0,0.06) 0.5deg,
-                    transparent 20deg,
-                    rgba(255,215,0,0.06) 20.5deg,
-                    transparent 40deg,
-                    rgba(255,215,0,0.06) 40.5deg,
-                    transparent 60deg,
-                    rgba(255,215,0,0.06) 60.5deg,
-                    transparent 80deg
+                    rgba(255,215,0,0.15) 0.5deg,
+                    rgba(255,215,0,0.1) 1deg,
+                    rgba(255,215,0,0.05) 1.5deg,
+                    transparent 3deg,
+                    transparent 15deg
                   ),
                   repeating-conic-gradient(
-                    from 10deg at 50% 50%,
+                    from 7.5deg at 50% 50%,
                     transparent 0deg,
-                    rgba(255,215,0,0.04) 0.5deg,
-                    transparent 20deg,
-                    rgba(255,215,0,0.04) 20.5deg,
-                    transparent 40deg,
-                    rgba(255,215,0,0.04) 40.5deg,
-                    transparent 60deg,
-                    rgba(255,215,0,0.04) 60.5deg,
-                    transparent 80deg
+                    rgba(255,215,0,0.1) 0.5deg,
+                    rgba(255,215,0,0.05) 1deg,
+                    rgba(255,215,0,0.02) 1.5deg,
+                    transparent 3deg,
+                    transparent 15deg
                   )
                 `,
                 filter: 'blur(0.5px)',
@@ -387,9 +381,9 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Main Content */}
-          <div className="flex items-center justify-center h-screen">
+          <div className="flex items-center justify-center min-h-screen -mt-12">
             {/* Cards Row */}
-            <div className="flex justify-center items-center gap-4">
+            <div className="flex justify-center items-center gap-2">
               {navigationItems.slice(0, 2).map((item) => (
                 <NavigationButton
                   key={item.id}
@@ -408,7 +402,7 @@ export default function DashboardPage(): JSX.Element | null {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="relative w-[300px] h-[300px] mx-6"
+                className="relative w-[300px] h-[300px] mx-4"
               >
                 <div 
                   className="absolute inset-0 animate-pulse-opacity"
@@ -449,7 +443,7 @@ export default function DashboardPage(): JSX.Element | null {
         }
 
         .animate-spin-very-slow {
-          animation: spin-very-slow 600s linear infinite;
+          animation: spin-very-slow 480s linear infinite;
         }
 
         body {
