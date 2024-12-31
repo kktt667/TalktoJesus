@@ -212,7 +212,6 @@ export default function DashboardPage(): JSX.Element | null {
   const { ready, authenticated, logout } = usePrivy();
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
-  const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
