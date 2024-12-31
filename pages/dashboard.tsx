@@ -202,103 +202,151 @@ export default function DashboardPage(): JSX.Element | null {
 
         {/* Chat Window */}
         <motion.div 
-          className="relative w-full max-w-4xl h-[85vh] flex flex-col"
+          className="relative w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden"
         >
-          {/* Border Image */}
-          <div className="absolute inset-0">
+          {/* Scroll Top */}
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-[120%] h-[100px]">
             <Image
-              src="/images/border.png"
+              src="/images/scroll-top.png"
               layout="fill"
-              objectFit="fill"
-              alt="Scroll Border"
-              className="opacity-100"
+              objectFit="contain"
+              alt="Scroll Top"
             />
           </div>
 
-          {/* Content Container */}
-          <div className="relative flex flex-col h-full pt-32 px-16 pb-16">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <h3 className="font-cinzel text-[#2c1810] text-4xl tracking-wider mb-4 drop-shadow-[0_1px_1px_rgba(255,255,255,0.3)]">
-                {item.title}
-              </h3>
+          {/* Background Texture */}
+          <div className="absolute inset-0 rounded-lg">
+            <Image
+              src="/images/texture.jpg"
+              layout="fill"
+              objectFit="cover"
+              alt="Scroll Texture"
+              className="opacity-90"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1e1d2a]/10 to-transparent" />
+          </div>
+
+          {/* Header */}
+          <div className="relative pt-12 pb-6 px-12">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-6">
+                <span className="text-4xl filter drop-shadow-lg">{item.icon}</span>
+                <div>
+                  <h3 className="font-cinzel text-gold text-3xl tracking-wider mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+                    {item.title}
+                  </h3>
+                  <p className="font-cormorant text-gold/90 text-xl italic">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={handleChatClose}
+                className="text-gold/60 hover:text-gold transition-colors text-4xl"
+              >
+                ×
+              </button>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto space-y-8 pr-4 custom-scrollbar">
-              {messages[chatId]?.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className={`max-w-[70%] ${
-                    msg.role === 'user' 
-                      ? 'bg-[#2c1810]/10 border-[#2c1810]/20' 
-                      : 'bg-[#2c1810]/5 border-[#2c1810]/10'
-                  } border rounded-lg p-6 backdrop-blur-sm relative`}>
-                    <p className="font-cormorant text-[#2c1810] text-xl leading-relaxed">
-                      {msg.content}
+            {/* Ornate Divider */}
+            <div className="mt-8 flex items-center justify-center">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+              <div className="px-6 relative">
+                <Image
+                  src="/images/dove_icon.png"
+                  width={40}
+                  height={40}
+                  alt="Divider"
+                  className="opacity-80"
+                />
+              </div>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+            </div>
+
+            <p className="font-cinzel text-gold/90 text-lg text-center mt-6 italic drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+              "{item.verse.text}"
+            </p>
+          </div>
+
+          {/* Messages */}
+          <div className="relative flex-1 overflow-y-auto px-12 py-8 space-y-8">
+            {messages[chatId]?.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`max-w-[70%] ${
+                  msg.role === 'user' 
+                    ? 'bg-gold/5 border-gold/20' 
+                    : 'bg-black/10 border-gold/10'
+                } border rounded-lg p-6 backdrop-blur-sm relative`}>
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent opacity-50" />
+                  <p className="relative font-cormorant text-gold/90 text-xl leading-relaxed">
+                    {msg.content}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between relative">
+                    <p className="text-xs text-gold/50 font-cinzel">
+                      {new Date(msg.timestamp).toLocaleTimeString()}
                     </p>
-                    <div className="mt-3 flex items-center justify-between">
-                      <p className="text-xs text-[#2c1810]/70 font-cinzel">
-                        {new Date(msg.timestamp).toLocaleTimeString()}
-                      </p>
-                      {msg.role === 'assistant' && (
-                        <div className="flex items-center space-x-1">
-                          <div className="w-1 h-1 bg-[#2c1810]/50 rounded-full animate-pulse" />
-                          <div className="w-1 h-1 bg-[#2c1810]/50 rounded-full animate-pulse delay-100" />
-                          <div className="w-1 h-1 bg-[#2c1810]/50 rounded-full animate-pulse delay-200" />
-                        </div>
-                      )}
-                    </div>
+                    {msg.role === 'assistant' && (
+                      <div className="flex items-center space-x-1">
+                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse" />
+                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse delay-100" />
+                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse delay-200" />
+                      </div>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Input Section */}
-            <div className="relative mt-8">
-              <div className="flex items-center space-x-4">
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatId)}
-                    placeholder="Ask for divine guidance..."
-                    className="w-full bg-[#2c1810]/5 border-2 border-[#2c1810]/30 rounded-full px-8 py-4
-                              text-xl text-[#2c1810] placeholder-[#2c1810]/40 
-                              focus:outline-none focus:border-[#2c1810]/50
-                              transition-colors duration-200 font-cormorant"
-                  />
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleSendMessage(chatId)}
-                  className="bg-[#2c1810]/5 hover:bg-[#2c1810]/10 rounded-full p-6
-                            transition-all duration-200 border-2 border-[#2c1810]/30
-                            hover:border-[#2c1810]/50 group relative"
-                >
-                  <Image
-                    src="/images/dove_icon.png"
-                    width={48}
-                    height={48}
-                    alt="Send"
-                    className="opacity-80 group-hover:opacity-100 transition-opacity duration-200"
-                  />
-                </motion.button>
               </div>
+            ))}
+          </div>
+
+          {/* Input Section */}
+          <div className="relative px-12 pb-12">
+            <div className="flex items-center space-x-4">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatId)}
+                  placeholder="Ask for divine guidance..."
+                  className="w-full bg-black/20 border-2 border-gold/30 rounded-full px-8 py-4
+                            text-xl text-gold/90 placeholder-gold/40 
+                            focus:outline-none focus:border-gold/50
+                            transition-colors duration-200 font-cormorant"
+                />
+                <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleSendMessage(chatId)}
+                className="bg-gold/10 hover:bg-gold/20 rounded-full p-4
+                          transition-all duration-200 border-2 border-gold/30
+                          hover:border-gold/50 group relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-transparent rounded-full" />
+                <Image
+                  src="/images/dove_icon.png"
+                  width={32}
+                  height={32}
+                  alt="Send"
+                  className="opacity-80 group-hover:opacity-100 transition-opacity duration-200"
+                />
+              </motion.button>
             </div>
           </div>
 
-          {/* Close Button */}
-          <button 
-            onClick={handleChatClose}
-            className="absolute top-6 right-8 text-[#2c1810]/60 hover:text-[#2c1810] transition-colors text-4xl"
-          >
-            ×
-          </button>
+          {/* Scroll Bottom */}
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[120%] h-[100px] rotate-180">
+            <Image
+              src="/images/scroll-top.png"
+              layout="fill"
+              objectFit="contain"
+              alt="Scroll Bottom"
+            />
+          </div>
         </motion.div>
       </motion.div>
     );
