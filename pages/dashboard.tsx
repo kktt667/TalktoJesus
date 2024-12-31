@@ -183,7 +183,38 @@ export default function DashboardPage(): JSX.Element | null {
     }));
     setInputMessage("");
 
-    // TODO: Add API call here
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: inputMessage,
+          chatId: chatId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response');
+      }
+
+      const data = await response.json();
+      
+      const assistantMessage: ChatMessage = {
+        role: 'assistant',
+        content: data.response,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => ({
+        ...prev,
+        [chatId]: [...(prev[chatId] || []), assistantMessage]
+      }));
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error appropriately
+    }
   };
 
   const ChatInterface = ({ chatId }: { chatId: string }) => {
@@ -202,20 +233,10 @@ export default function DashboardPage(): JSX.Element | null {
 
         {/* Chat Window */}
         <motion.div 
-          className="relative w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden"
+          className="relative w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden rounded-3xl"
         >
-          {/* Scroll Top */}
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-[120%] h-[100px]">
-            <Image
-              src="/images/scroll-top.png"
-              layout="fill"
-              objectFit="contain"
-              alt="Scroll Top"
-            />
-          </div>
-
           {/* Background Texture */}
-          <div className="absolute inset-0 rounded-lg">
+          <div className="absolute inset-0 rounded-3xl">
             <Image
               src="/images/texture.jpg"
               layout="fill"
@@ -223,53 +244,28 @@ export default function DashboardPage(): JSX.Element | null {
               alt="Scroll Texture"
               className="opacity-90"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1e1d2a]/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1e1d2a]/10 to-transparent rounded-3xl" />
           </div>
 
           {/* Header */}
-          <div className="relative pt-12 pb-6 px-12">
+          <div className="relative px-12 py-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-6">
-                <span className="text-4xl filter drop-shadow-lg">{item.icon}</span>
-                <div>
-                  <h3 className="font-cinzel text-gold text-3xl tracking-wider mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                    {item.title}
-                  </h3>
-                  <p className="font-cormorant text-gold/90 text-xl italic">
-                    {item.description}
-                  </p>
-                </div>
+                <h3 className="font-cinzel text-[#4a3728] text-3xl tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] text-center w-full">
+                  {item.title}
+                </h3>
               </div>
               <button 
                 onClick={handleChatClose}
-                className="text-gold/60 hover:text-gold transition-colors text-4xl"
+                className="text-[#4a3728]/60 hover:text-[#4a3728] transition-colors text-4xl"
               >
                 ×
               </button>
             </div>
-
-            {/* Ornate Divider */}
-            <div className="mt-8 flex items-center justify-center">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
-              <div className="px-6 relative">
-                <Image
-                  src="/images/dove_icon.png"
-                  width={40}
-                  height={40}
-                  alt="Divider"
-                  className="opacity-80"
-                />
-              </div>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
-            </div>
-
-            <p className="font-cinzel text-gold/90 text-lg text-center mt-6 italic drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-              "{item.verse.text}"
-            </p>
           </div>
 
           {/* Messages */}
-          <div className="relative flex-1 overflow-y-auto px-12 py-8 space-y-8">
+          <div className="relative flex-1 overflow-y-auto px-12 py-8 space-y-8 scrollbar-thin scrollbar-thumb-[#4a3728]/20 scrollbar-track-transparent">
             {messages[chatId]?.map((msg, idx) => (
               <div
                 key={idx}
@@ -277,22 +273,21 @@ export default function DashboardPage(): JSX.Element | null {
               >
                 <div className={`max-w-[70%] ${
                   msg.role === 'user' 
-                    ? 'bg-gold/5 border-gold/20' 
-                    : 'bg-black/10 border-gold/10'
-                } border rounded-lg p-6 backdrop-blur-sm relative`}>
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent opacity-50" />
-                  <p className="relative font-cormorant text-gold/90 text-xl leading-relaxed">
+                    ? 'bg-[#4a3728]/5 border-[#4a3728]/20' 
+                    : 'bg-black/5 border-[#4a3728]/10'
+                } border rounded-2xl p-6 backdrop-blur-sm relative`}>
+                  <p className="relative font-cormorant text-[#4a3728] text-xl leading-relaxed">
                     {msg.content}
                   </p>
                   <div className="mt-3 flex items-center justify-between relative">
-                    <p className="text-xs text-gold/50 font-cinzel">
+                    <p className="text-xs text-[#4a3728]/50 font-cinzel">
                       {new Date(msg.timestamp).toLocaleTimeString()}
                     </p>
                     {msg.role === 'assistant' && (
                       <div className="flex items-center space-x-1">
-                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse" />
-                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse delay-100" />
-                        <div className="w-1 h-1 bg-gold/50 rounded-full animate-pulse delay-200" />
+                        <div className="w-1 h-1 bg-[#4a3728]/50 rounded-full animate-pulse" />
+                        <div className="w-1 h-1 bg-[#4a3728]/50 rounded-full animate-pulse delay-100" />
+                        <div className="w-1 h-1 bg-[#4a3728]/50 rounded-full animate-pulse delay-200" />
                       </div>
                     )}
                   </div>
@@ -303,49 +298,42 @@ export default function DashboardPage(): JSX.Element | null {
 
           {/* Input Section */}
           <div className="relative px-12 pb-12">
-            <div className="flex items-center space-x-4">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendMessage(chatId);
+              }}
+              className="flex items-center space-x-4"
+            >
               <div className="flex-1 relative">
                 <input
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatId)}
                   placeholder="Ask for divine guidance..."
-                  className="w-full bg-black/20 border-2 border-gold/30 rounded-full px-8 py-4
-                            text-xl text-gold/90 placeholder-gold/40 
-                            focus:outline-none focus:border-gold/50
+                  className="w-full bg-[#4a3728]/5 border-2 border-[#4a3728]/30 rounded-full px-8 py-4
+                            text-xl text-[#4a3728] placeholder-[#4a3728]/40 
+                            focus:outline-none focus:border-[#4a3728]/50
                             transition-colors duration-200 font-cormorant"
                 />
-                <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
               </div>
               <motion.button
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                type="submit"
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => handleSendMessage(chatId)}
-                className="bg-gold/10 hover:bg-gold/20 rounded-full p-4
-                          transition-all duration-200 border-2 border-gold/30
-                          hover:border-gold/50 group relative"
+                className="bg-[#4a3728]/5 hover:bg-[#4a3728]/10 rounded-full p-4
+                          transition-all duration-200 border-2 border-[#4a3728]/30
+                          hover:border-[#4a3728]/50 flex items-center justify-center"
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-transparent rounded-full" />
                 <Image
                   src="/images/dove_icon.png"
-                  width={32}
-                  height={32}
+                  width={28}
+                  height={28}
                   alt="Send"
                   className="opacity-80 group-hover:opacity-100 transition-opacity duration-200"
                 />
               </motion.button>
-            </div>
-          </div>
-
-          {/* Scroll Bottom */}
-          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[120%] h-[100px] rotate-180">
-            <Image
-              src="/images/scroll-top.png"
-              layout="fill"
-              objectFit="contain"
-              alt="Scroll Bottom"
-            />
+            </form>
           </div>
         </motion.div>
       </motion.div>
