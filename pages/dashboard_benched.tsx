@@ -145,7 +145,7 @@ export default function DashboardPage() {
                       <img
                         src="/images/dove_icon.png"
                         alt="Dove"
-                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 opacity-70"
+                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-18 h-18 opacity-70"
                       />
                       <motion.div
                         className="absolute -bottom-16 left-1/2 transform -translate-x-1/2"
