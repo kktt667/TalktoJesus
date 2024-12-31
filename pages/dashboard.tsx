@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, memo } from "react";
 import { useRouter } from "next/router";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
@@ -142,6 +142,71 @@ const NavigationButton: React.FC<{
   </motion.div>
 );
 
+const ChatInput = memo(({ 
+  onSend, 
+  isLoading 
+}: { 
+  onSend: (message: string) => void;
+  isLoading: boolean;
+}) => {
+  const [localMessage, setLocalMessage] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSend = useCallback(() => {
+    if (localMessage.trim() && !isLoading) {
+      onSend(localMessage.trim());
+      setLocalMessage("");
+    }
+  }, [localMessage, isLoading, onSend]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  }, [handleSend]);
+
+  // Focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  return (
+    <div className="flex items-center justify-center space-x-4">
+      <input
+        ref={inputRef}
+        type="text"
+        value={localMessage}
+        onChange={(e) => setLocalMessage(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Ask for divine guidance..."
+        className="w-[85%] bg-[#4a3728]/5 border-2 border-[#4a3728]/30 rounded-full px-8 py-4
+                  text-xl text-[#4a3728] placeholder-[#4a3728]/40 text-left
+                  focus:outline-none focus:border-[#4a3728]/50
+                  transition-colors duration-200 font-cormorant"
+      />
+      <button
+        onClick={handleSend}
+        disabled={!localMessage.trim() || isLoading}
+        className="flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <div className="relative w-14 h-14">
+          <Image
+            src="/images/dove_icon.png"
+            layout="fill"
+            objectFit="contain"
+            alt="Send"
+            className="opacity-80 hover:opacity-100 transition-opacity duration-200"
+            priority
+          />
+        </div>
+      </button>
+    </div>
+  );
+});
+
+ChatInput.displayName = 'ChatInput';
+
 export default function DashboardPage(): JSX.Element | null {
   const router = useRouter();
   const { ready, authenticated, logout } = usePrivy();
@@ -170,20 +235,34 @@ export default function DashboardPage(): JSX.Element | null {
     setSelectedChat(null);
   };
 
-  const handleSendMessage = async (chatId: string) => {
-    if (!inputMessage.trim() || isLoading) return;
+  const handleSendMessage = async (chatId: string, message: string) => {
+    if (!message.trim() || isLoading) return;
 
     const newMessage: ChatMessage = {
       role: 'user',
-      content: inputMessage.trim(),
+      content: message.trim(),
       timestamp: new Date()
     };
 
+    // Optimistically add user message
     setMessages(prev => ({
       ...prev,
       [chatId]: [...(prev[chatId] || []), newMessage]
     }));
-    setInputMessage("");
+
+    // Add loading message
+    const loadingMessage: ChatMessage = {
+      role: 'assistant',
+      content: '...',
+      timestamp: new Date(),
+      isLoading: true
+    };
+
+    setMessages(prev => ({
+      ...prev,
+      [chatId]: [...(prev[chatId] || []), loadingMessage]
+    }));
+
     setIsLoading(true);
 
     try {
@@ -193,7 +272,7 @@ export default function DashboardPage(): JSX.Element | null {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: inputMessage,
+          message: message,
           chatId: chatId
         }),
       });
@@ -204,28 +283,40 @@ export default function DashboardPage(): JSX.Element | null {
 
       const data = await response.json();
       
-      const assistantMessage: ChatMessage = {
-        role: 'assistant',
-        content: data.response,
-        timestamp: new Date()
-      };
-
-      setMessages(prev => ({
-        ...prev,
-        [chatId]: [...(prev[chatId] || []), assistantMessage]
-      }));
+      // Replace loading message with actual response
+      setMessages(prev => {
+        const messages = [...(prev[chatId] || [])];
+        // Remove loading message
+        messages.pop();
+        // Add actual response
+        messages.push({
+          role: 'assistant',
+          content: data.response,
+          timestamp: new Date()
+        });
+        return {
+          ...prev,
+          [chatId]: messages
+        };
+      });
     } catch (error) {
       console.error('Error:', error);
-      // Add error message to chat
-      const errorMessage: ChatMessage = {
-        role: 'assistant',
-        content: "My child, I apologize but I am unable to respond at this moment. Please try again and I will be here to guide you.",
-        timestamp: new Date()
-      };
-      setMessages(prev => ({
-        ...prev,
-        [chatId]: [...(prev[chatId] || []), errorMessage]
-      }));
+      // Replace loading message with error message
+      setMessages(prev => {
+        const messages = [...(prev[chatId] || [])];
+        // Remove loading message
+        messages.pop();
+        // Add error message
+        messages.push({
+          role: 'assistant',
+          content: "My child, I apologize but I am unable to respond at this moment. Please try again and I will be here to guide you.",
+          timestamp: new Date()
+        });
+        return {
+          ...prev,
+          [chatId]: messages
+        };
+      });
     } finally {
       setIsLoading(false);
     }
@@ -234,8 +325,18 @@ export default function DashboardPage(): JSX.Element | null {
   const ChatInterface = ({ chatId }: { chatId: string }) => {
     const item = navigationItems.find(i => i.id === chatId);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
 
     if (!item) return null;
+
+    const handleClose = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+      handleChatClose();
+    }, []);
+
+    const handleMessageSend = useCallback((message: string) => {
+      handleSendMessage(chatId, message);
+    }, [chatId]);
 
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -263,7 +364,7 @@ export default function DashboardPage(): JSX.Element | null {
         className="fixed inset-0 z-30 flex items-center justify-center p-4"
       >
         {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={handleChatClose} />
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={handleClose} />
 
         {/* Chat Window */}
         <motion.div 
@@ -288,8 +389,11 @@ export default function DashboardPage(): JSX.Element | null {
                 {item.title}
               </h3>
               <button 
-                onClick={handleChatClose}
-                className="text-[#4a3728]/60 hover:text-[#4a3728] transition-colors text-4xl absolute right-8"
+                ref={closeButtonRef}
+                onClick={handleClose}
+                className="fixed top-8 right-8 w-12 h-12 flex items-center justify-center
+                          text-[#4a3728]/60 hover:text-[#4a3728] transition-colors text-4xl
+                          transform-gpu"
               >
                 ×
               </button>
@@ -359,47 +463,9 @@ export default function DashboardPage(): JSX.Element | null {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Section with fixed input and improved button */}
+          {/* Input Section - Using Memoized Component */}
           <div className="relative px-24 pb-8">
-            <div className="flex items-center justify-center space-x-4">
-              <input
-                type="text"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    if (inputMessage.trim() && !isLoading) {
-                      handleSendMessage(chatId);
-                    }
-                  }
-                }}
-                placeholder="Ask for divine guidance..."
-                className="w-[85%] bg-[#4a3728]/5 border-2 border-[#4a3728]/30 rounded-full px-8 py-4
-                          text-xl text-[#4a3728] placeholder-[#4a3728]/40 text-left
-                          focus:outline-none focus:border-[#4a3728]/50
-                          transition-colors duration-200 font-cormorant"
-              />
-              <button
-                onClick={() => {
-                  if (inputMessage.trim() && !isLoading) {
-                    handleSendMessage(chatId);
-                  }
-                }}
-                disabled={!inputMessage.trim() || isLoading}
-                className="flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <div className="relative w-14 h-14">
-                  <Image
-                    src="/images/dove_icon.png"
-                    layout="fill"
-                    objectFit="contain"
-                    alt="Send"
-                    className="opacity-80 hover:opacity-100 transition-opacity duration-200"
-                  />
-                </div>
-              </button>
-            </div>
+            <ChatInput onSend={handleMessageSend} isLoading={isLoading} />
           </div>
         </motion.div>
       </motion.div>
