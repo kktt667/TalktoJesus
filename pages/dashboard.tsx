@@ -297,7 +297,18 @@ export default function DashboardPage(): JSX.Element | null {
           </div>
 
           {/* Messages */}
-          <div className="relative flex-1 overflow-y-auto px-24 py-8 space-y-12 scrollbar-thin scrollbar-thumb-[#4a3728]/20 scrollbar-track-transparent">
+          <div 
+            className="relative flex-1 overflow-y-auto px-24 py-8 space-y-12 
+                       scrollbar-thin scrollbar-track-transparent
+                       [&::-webkit-scrollbar]:w-2
+                       [&::-webkit-scrollbar-track]:bg-transparent
+                       [&::-webkit-scrollbar-thumb]:bg-[#daa520]/20
+                       [&::-webkit-scrollbar-thumb]:rounded-full
+                       [&::-webkit-scrollbar-thumb]:border-2
+                       [&::-webkit-scrollbar-thumb]:border-solid
+                       [&::-webkit-scrollbar-thumb]:border-[#daa520]/30
+                       hover:[&::-webkit-scrollbar-thumb]:bg-[#daa520]/30"
+          >
             {messages[chatId]?.map((msg, idx) => (
               <div
                 key={idx}
@@ -348,9 +359,9 @@ export default function DashboardPage(): JSX.Element | null {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Section */}
+          {/* Input Section with fixed input and improved button */}
           <div className="relative px-24 pb-8">
-            <div className="w-[85%] mx-auto relative">
+            <div className="flex items-center justify-center space-x-4">
               <input
                 type="text"
                 value={inputMessage}
@@ -364,7 +375,7 @@ export default function DashboardPage(): JSX.Element | null {
                   }
                 }}
                 placeholder="Ask for divine guidance..."
-                className="w-full bg-[#4a3728]/5 border-2 border-[#4a3728]/30 rounded-full px-8 py-4
+                className="w-[85%] bg-[#4a3728]/5 border-2 border-[#4a3728]/30 rounded-full px-8 py-4
                           text-xl text-[#4a3728] placeholder-[#4a3728]/40 text-left
                           focus:outline-none focus:border-[#4a3728]/50
                           transition-colors duration-200 font-cormorant"
@@ -376,21 +387,15 @@ export default function DashboardPage(): JSX.Element | null {
                   }
                 }}
                 disabled={!inputMessage.trim() || isLoading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 
-                          h-16 w-16 flex items-center justify-center
-                          bg-[#4a3728]/5 hover:bg-[#4a3728]/10 rounded-full
-                          transition-all duration-200 border-2 border-[#4a3728]/30
-                          hover:border-[#4a3728]/50
-                          disabled:opacity-50 disabled:cursor-not-allowed
-                          transform-none"
+                className="flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="relative w-12 h-12">
+                <div className="relative w-14 h-14">
                   <Image
                     src="/images/dove_icon.png"
                     layout="fill"
                     objectFit="contain"
                     alt="Send"
-                    className="opacity-80 transition-opacity duration-200"
+                    className="opacity-80 hover:opacity-100 transition-opacity duration-200"
                   />
                 </div>
               </button>
