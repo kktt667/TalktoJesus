@@ -328,7 +328,7 @@ export default function DashboardPage(): JSX.Element | null {
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.1) 0%, transparent 70%)'
+              background: 'radial-gradient(circle at 50% 50%, rgba(255,215,0,0.12) 0%, transparent 70%)'
             }}
           />
           
@@ -341,20 +341,20 @@ export default function DashboardPage(): JSX.Element | null {
                   repeating-conic-gradient(
                     from 0deg at 50% 50%,
                     transparent 0deg,
-                    rgba(255,215,0,0.15) 0.5deg,
-                    rgba(255,215,0,0.1) 1deg,
-                    rgba(255,215,0,0.05) 1.5deg,
-                    transparent 3deg,
-                    transparent 15deg
+                    rgba(255,215,0,0.2) 1deg,
+                    rgba(255,215,0,0.15) 2deg,
+                    rgba(255,215,0,0.1) 3deg,
+                    transparent 4deg,
+                    transparent 30deg
                   ),
                   repeating-conic-gradient(
-                    from 7.5deg at 50% 50%,
+                    from 15deg at 50% 50%,
                     transparent 0deg,
-                    rgba(255,215,0,0.1) 0.5deg,
-                    rgba(255,215,0,0.05) 1deg,
-                    rgba(255,215,0,0.02) 1.5deg,
-                    transparent 3deg,
-                    transparent 15deg
+                    rgba(255,215,0,0.15) 1deg,
+                    rgba(255,215,0,0.1) 2deg,
+                    rgba(255,215,0,0.05) 3deg,
+                    transparent 4deg,
+                    transparent 30deg
                   )
                 `,
                 filter: 'blur(0.5px)',
@@ -404,12 +404,6 @@ export default function DashboardPage(): JSX.Element | null {
                 }}
                 className="relative w-[300px] h-[300px] mx-4"
               >
-                <div 
-                  className="absolute inset-0 animate-pulse-opacity"
-                  style={{
-                    background: 'radial-gradient(circle at 50% 50%, rgba(218,165,32,0.5) 0%, rgba(218,165,32,0.3) 30%, rgba(218,165,32,0.1) 60%, transparent 80%)',
-                  }}
-                />
                 <Image
                   src="/images/cross.png"
                   layout="fill"
