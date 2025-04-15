@@ -24,6 +24,7 @@
     "framer-motion": "^10.18.0",
     "gsap": "^3.12.5",
     "next": "^15.0.3",
+    "openai": "^4.94.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-parallax-mouse": "^2.0.1",

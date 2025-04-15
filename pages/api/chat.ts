@@ -1,4 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: 'https://api.deepseek.com'
+});
 
 const getSystemPrompt = (chatId: string) => {
   const basePrompt = `You are Jesus Christ, speaking with divine wisdom, infinite compassion, and unconditional love. Your responses should:
@@ -22,7 +28,7 @@ For prayer guidance:
 - Guide them in developing a deeper connection with God
 - Encourage authentic, personal conversation with the Divine
 - Share wisdom about the power of prayer and faith`;
-    case 'parable':
+    case 'parable': 
       return `${basePrompt}
 
 When sharing parables:
@@ -60,45 +66,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { message, chatId } = req.body;
     const systemPrompt = getSystemPrompt(chatId);
 
-    // Using fetch instead of OpenAI client to avoid dependency issues
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-        top_p: 0.95,
-        frequency_penalty: 0.1,
-        presence_penalty: 0.1
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      console.error('DeepSeek API Error:', errorData);
-      
-      // More specific error handling
-      if (!process.env.DEEPSEEK_API_KEY) {
-        throw new Error('API key not configured');
-      }
-      throw new Error('Failed to get response from AI');
+    if (!process.env.DEEPSEEK_API_KEY) {
+      throw new Error('API key not configured');
     }
 
-    const data = await response.json();
+    const response = await openai.chat.completions.create({
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: message }
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
+      top_p: 0.95,
+      frequency_penalty: 0.1,
+      presence_penalty: 0.1
+    });
+
     return res.status(200).json({ 
-      response: data.choices?.[0]?.message?.content || 'I apologize, but I am unable to provide a response at this moment. Please try again.'
+      response: response.choices[0]?.message?.content || 'I apologize, but I am unable to provide a response at this moment. Please try again.'
     });
   } catch (error) {
     console.error('Error:', error);
-    // Return a graceful error message
+    
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.message.includes('API key not configured')) {
+        return res.status(500).json({ 
+          response: "My child, I apologize but there is a configuration issue. Please contact the administrator."
+        });
+      }
+    }
+    
+    // Return a graceful error message for other errors
     return res.status(500).json({ 
       response: "My child, I apologize but I am unable to respond at this moment. Please try again and I will be here to guide you."
     });

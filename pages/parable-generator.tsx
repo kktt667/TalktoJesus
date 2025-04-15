@@ -171,18 +171,41 @@ export default function ParableGenerator() {
       }, 1000);
   
       try {
-        setTimeout(() => {
-          const angelMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            type: 'angel',
-            content: "Blessed child, here is a parable for your contemplation...",
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, angelMessage]);
-          setIsLoading(false);
-        }, 2000);
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: prompt,
+            chatId: 'parable'
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to get response');
+        }
+
+        const data = await response.json();
+        
+        const angelMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'angel',
+          content: data.response,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, angelMessage]);
       } catch (error) {
         console.error('Error:', error);
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'angel',
+          content: "My child, I apologize but I am unable to respond at this moment. Please try again and I will be here to guide you.",
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      } finally {
         setIsLoading(false);
       }
     };
