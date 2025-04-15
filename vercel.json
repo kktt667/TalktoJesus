@@ -1,7 +1,8 @@
 {
   "functions": {
-    "api/chat": {
+    "api/**/*.ts": {
       "maxDuration": 120
     }
-  }
+  },
+  "version": 2
 } 
