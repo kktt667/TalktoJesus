@@ -1,34 +1,61 @@
-# Talk to Jesus 🌟
+# Talk to Jesus
 
-Welcome to **Talk to Jesus**, a digital space where users can connect with the divine in a peaceful, inviting environment. Our landing page allows you to take a step closer to the spiritual journey by creating a platform for conversations, reflections, and connection with Jesus. 🌿✝️
+Conversational devotional app — prayer guidance, parables, and "what would Jesus do" reflections, each running its own tuned persona.
 
-## 🌟 Purpose
+Built **November–December 2024**, back when this idea wasn't everywhere yet. There are a fair few of these around now. This one got there first.
 
-**Talk to Jesus** is designed to be a space for meaningful reflection, prayer, and connection. The landing page is beautifully designed to invoke peace, love, and serenity, with a holy and sleek interface. Whether you're looking for inspiration, peace, or spiritual guidance, you are welcome here.
+Also a frontend sidequest — an excuse to build something atmospheric where the visual treatment was the point.
 
-## 🚀 Features
+---
 
-- **Serene Design:** Soft golden hues, gentle gradients, and calming visuals of olive branches and doves create an atmosphere of tranquility.
-- **Holy Connection:** Connect with the divine, through interactive elements that invite users to meditate, reflect, and connect with Jesus.
-- **User-Friendly Interface:** Sleek and intuitive navigation to guide users seamlessly through the experience.
-- **Responsive:** Optimized for both desktop and mobile use, ensuring an inviting experience no matter the device.
-- **Spiritual Elements:** Interactive features that allow you to receive wisdom and comfort from the messages of Jesus.
+## The particle field
 
-## 🖼️ Design Inspiration
+`components/particles.tsx` — 6,000 points via `@react-three/fiber`, drifting on three axes at slightly different rates so the motion never visibly loops:
 
-The landing page features a background of glowing light with a gentle, divine gradient. Images of olive branches and doves surround you, offering a sense of peace and guidance. The interface is designed to be calming, without overwhelming the user with unnecessary distractions. Every element on the page is created with simplicity, elegance, and divinity in mind.
+```tsx
+points.current.rotation.x = clock.getElapsedTime() * 0.05;
+points.current.rotation.y = clock.getElapsedTime() * 0.03;
+points.current.rotation.z = clock.getElapsedTime() * 0.02;
+```
 
-## 🛠️ Technologies Used
+Additive blending with `depthWrite` off, so overlapping points pile into brighter patches instead of z-fighting. That's what makes it glow rather than look like a flat field of dots.
 
-- **Frontend:** Built with React.js and Next.js for a modern, fast-loading, and seamless experience.
-- **Styling:** Tailwind CSS for sleek, responsive designs, with custom animations and effects to create a celestial feel.
-- **Deployment:** Hosted on Vercel or your preferred hosting provider for easy scalability.
+WebGL can't prerender, so the canvas mounts through `next/dynamic` with `ssr: false`. It's `aria-hidden` with `pointerEvents: 'none'` — a decorative layer shouldn't eat clicks or turn up in a screen reader — and `dpr` is capped at 1.5 so 6,000 points don't get multiplied again by a retina pixel ratio.
 
-## 💡 Future Enhancements
+The rest is layered `backdrop-blur` over gradients, self-hosted Adelle Sans, and Framer Motion for transitions.
 
-- **Chatbot Integration:** Allow users to connect with a virtual assistant powered by divine inspiration.
-- **Parable Generator:** Light up your day with relevant and memorable parables.
-- **Custom Prayer Generator:** Acknowledge god and tell him everything you ever wanted in the holiest way, with the help of Jesus.
-- **Audio Guidance:** Provide guided prayers, meditations, or messages.
-- **Community Building:** Implement features for users to share reflections and experiences on social media.
+## The personas
 
+There's no single chatbot. `getSystemPrompt(chatId)` composes a shared base prompt with a mode-specific extension, so each surface behaves differently — **prayer** helps you write one, **parable** builds modern parallels from biblical wisdom, **wwjd** applies old teaching to current situations, **kindness** suggests concrete acts of service.
+
+Composing beats four separate prompts because tone stays consistent while intent changes, and tweaking the shared voice updates all four at once.
+
+Errors stay in character too. API dies and you get *"My child, I apologize but I am unable to respond at this moment"* rather than a stack trace — in an app like this a raw error message shatters the whole thing.
+
+## Stack
+
+Next.js (pages router) · TypeScript · Tailwind · three.js / react-three-fiber · Framer Motion · DeepSeek · [Privy](https://privy.io) for auth
+
+```bash
+npm install
+cp .env.example .env.local   # DeepSeek key + Privy app ID
+npm run dev
+```
+
+Won't build without a valid Privy ID — the provider initialises during prerender.
+
+## Rate limiting
+
+Chat endpoint is IP-limited to 20 requests/hour with a 2,000-char cap, because it fronts a paid API on a public route.
+
+It's an in-memory map, so **per-instance** — serverless runs several, so this bounds abuse rather than stopping it. Proper fix is a shared store if it ever sees real traffic. Flagging it rather than pretending.
+
+## Known gaps
+
+**No streaming** — responses land all at once, so a long reflection feels like it hung. Biggest UX problem here and the first thing I'd fix.
+
+**No conversation memory** — every message is independent. The system prompt carries the persona, nothing carries the thread, so you can't refer back to what you just said.
+
+Also ~16MB of unoptimized images in `public/`, and no tests. The visual design is the best part of this and it currently loads slowly enough to undercut itself.
+
+MIT

@@ -57,13 +57,66 @@ When suggesting acts of kindness:
   }
 };
 
+// Simple in-memory rate limit. Per-instance only — a serverless deployment
+// runs several instances, so this bounds abuse rather than preventing it.
+// A shared store (Redis/Upstash) is the correct fix if this ever sees real traffic.
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 60 * 60 * 1000;
+const MAX_MESSAGE_LENGTH = 2000;
+
+const requestLog = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (requestLog.get(ip) ?? []).filter(t => now - t < RATE_WINDOW_MS);
+
+  if (recent.length >= RATE_LIMIT) {
+    requestLog.set(ip, recent);
+    return true;
+  }
+
+  recent.push(now);
+  requestLog.set(ip, recent);
+
+  // Drop stale entries so the map doesn't grow without bound.
+  if (requestLog.size > 5000) {
+    for (const [key, times] of requestLog) {
+      if (times.every(t => now - t >= RATE_WINDOW_MS)) requestLog.delete(key);
+    }
+  }
+
+  return false;
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(',')[0])
+    ?? req.socket.remoteAddress
+    ?? 'unknown';
+
+  if (isRateLimited(ip)) {
+    return res.status(429).json({
+      response: "My child, you have asked much of me in a short time. Rest a while, and return when you are ready."
+    });
+  }
+
   try {
     const { message, chatId } = req.body;
+
+    if (typeof message !== 'string' || message.trim().length === 0) {
+      return res.status(400).json({ response: "My child, speak and I will listen." });
+    }
+
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      return res.status(400).json({
+        response: "My child, your message is longer than I can receive at once. Share it with me in parts."
+      });
+    }
+
     const systemPrompt = getSystemPrompt(chatId);
 
     if (!process.env.DEEPSEEK_API_KEY) {

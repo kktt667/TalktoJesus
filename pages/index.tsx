@@ -1,7 +1,13 @@
 import { useLogin } from "@privy-io/react-auth";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from 'react';
+
+// WebGL can't render on the server, so the canvas is client-only.
+const ParticleField = dynamic(() => import('../components/particle-field'), {
+  ssr: false,
+});
 
 export default function LandingPage() {
   const router = useRouter();
@@ -43,6 +49,11 @@ export default function LandingPage() {
             />
             <div className="absolute inset-0 bg-black/30" />
           </div>
+        </div>
+
+        {/* Drifting golden particle field (WebGL, client-only) */}
+        <div className="fixed inset-0 z-1 pointer-events-none">
+          <ParticleField />
         </div>
 
         {/* Glowing Stars */}

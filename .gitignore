@@ -103,3 +103,8 @@ dist
 
 # TernJS port file
 .tern-port
+
+# scratch
+Plan.txt
+*_benched.tsx
+.DS_Store
